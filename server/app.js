@@ -3,6 +3,9 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var mongoose = require('mongoose');
+var session = require("express-session")
+var passport = require("passport");
+var LocalStrategy = require("passport-local").Strategy;
 
 require('dotenv').config()
 
@@ -21,6 +24,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Passport configuration
+const User = require('./models/user');
+app.use(session({ secret: "supersecretsessionsecret", resave: false, saveUninitialized: false }));
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(User.createStrategy());
+// use static serialize and deserialize of model for passport session support
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);

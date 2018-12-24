@@ -1,4 +1,5 @@
 const graphql = require("graphql");
+const passport = require("passport");
 const User = require("../models/user.js");
 
 // some js destructuring
@@ -35,43 +36,31 @@ const RootQuery = new GraphQLObjectType({
     fields: {
       user: {
         type: UserType,
-        args: { email:{type:GraphQLString} },
+        args: { email:{type:GraphQLString}, id:{type:GraphQLID} },
         resolve(parent, args){
-          return User.find({email: args.email});
+          if(args.id)
+            return User.findById(args.id);
+          return User.findOne({email: args.email});
         }
       },
-      // TODO: remove users query
-      users:{
-        type: new GraphQLList(UserType),
-        resolve(parent, args){
-          return User.find({});
+      currentUser:{
+        type: UserType,
+        resolve(parent, args, req){
+          return req.user;
         }
       }
     }
 })
 
-const Mutation = new GraphQLObjectType({
-  name: "Mutation",
-  fields:{
-    createUser:{
-      type: UserType,
-      args: {
-        email:{type: new GraphQLNonNull(GraphQLString)},
-        username:{type: new GraphQLNonNull(GraphQLString)},
-        password: {type: new GraphQLNonNull(GraphQLString)}
-      },
-      // TODO: user passport to register the user
-      resolve(parent, args){
-        let newUser = new User({ username:args.username, email:args.email, password:args.password});
-        return newUser.save();
-      }
-    }
-  }
-})
+// const Mutation = new GraphQLObjectType({
+//   name: "Mutation",
+//   fields:{
+//   }
+// })
 
 
 
 module.exports = new GraphQLSchema({
-  query: RootQuery,
-  mutation: Mutation
+  query: RootQuery
+  // mutation: Mutation
 })
