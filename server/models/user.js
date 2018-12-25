@@ -4,7 +4,6 @@ const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
     email:{ type: String, unique: true, dropdups: true, required: true},
-    username:{ type: String, required: true},
 });
 
 userSchema.plugin(
