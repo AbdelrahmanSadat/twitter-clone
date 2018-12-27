@@ -5,9 +5,8 @@ const Schema = mongoose.Schema;
 const userSchema = new Schema({
     email:{ type: String, unique: true, dropdups: true, required: true},
     verificationCode: {type: Number},
-    isVerified: { type: Boolean, default: false},
-    tweets: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tweet'}]
-});
+    isVerified: { type: Boolean, default: false}
+  });
 
 userSchema.plugin(
   passportLocalMongoose,

@@ -24,8 +24,8 @@ const UserType = new GraphQLObjectType({
     tweets:{
       type: new GraphQLList(TweetType),
       async resolve(parent, args){
-        const user = await User.findById(parent.id).populate("tweets");
-        return user.tweets;
+        const tweets = await Tweet.find({authorID: parent.id});
+        return tweets;
       }
     }
   })
@@ -91,9 +91,6 @@ const Mutation = new GraphQLObjectType({
       async resolve(parent, args){
         const tweet = new Tweet({ text: args.text, authorID: args.authorID});
         const savedTweet = await tweet.save();
-        const user = await User.findById(args.authorID);
-        user.tweets.push(savedTweet._id);
-        user.save();
         return {
           text: savedTweet.text,
           authorID:savedTweet.authorID.toJSON(),
