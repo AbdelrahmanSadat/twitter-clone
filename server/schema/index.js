@@ -1,4 +1,5 @@
 const graphql = require("graphql");
+const graphqlISODate = require("graphql-iso-date");
 const passport = require("passport");
 const User = require("../models/user.js");
 const Tweet = require("../models/tweet.js");
@@ -13,6 +14,12 @@ const {
   GraphQLList,
   GraphQLNonNull
  } = graphql;
+
+ const {
+   GraphQLDate,
+   GraphQLTime,
+   GraphQLDateTime
+ } = graphqlISODate;
 
 // TODO: Error handling
 
@@ -51,6 +58,8 @@ const TweetType = new GraphQLObjectType({
     id: {type: GraphQLID},
     authorID: {type: GraphQLID},
     text: {type: GraphQLString},
+    createdAt: {type: GraphQLDateTime},
+    updatedAt: {type: GraphQLDateTime},
     author: {
       type: UserType,
       resolve(parent, args){
@@ -101,11 +110,8 @@ const Mutation = new GraphQLObjectType({
       async resolve(parent, args, req){
         const tweet = new Tweet({ text: args.text, authorID: req.user.id});
         const savedTweet = await tweet.save();
-        return {
-          text: savedTweet.text,
-          authorID:savedTweet.authorID.toJSON(),
-          id: savedTweet._id
-        };
+        savedTweet.authorID = savedTweet.authorID.toJSON();
+        return savedTweet;
       }
     },
     follow:{
