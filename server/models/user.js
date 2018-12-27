@@ -5,7 +5,8 @@ const Schema = mongoose.Schema;
 const userSchema = new Schema({
     email:{ type: String, unique: true, dropdups: true, required: true},
     verificationCode: {type: Number},
-    isVerified: { type: Boolean, default: false}
+    isVerified: { type: Boolean, default: false},
+    following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User'}]
   });
 
 userSchema.plugin(

@@ -21,6 +21,20 @@ const UserType = new GraphQLObjectType({
   fields: ()=>({
     id: {type: GraphQLID},
     email: {type: GraphQLString},
+    following: {
+      type: new GraphQLList(UserType),
+      async resolve(parent, args){
+        const user = await User.findById(parent.id).populate("following");
+        return user.following;
+      }
+    },
+    followers: {
+      type: new GraphQLList(UserType),
+      async resolve(parent, args){
+        const followers = await User.find({ following: parent.id });
+        return followers;
+      }
+    },
     tweets:{
       type: new GraphQLList(TweetType),
       async resolve(parent, args){
@@ -82,20 +96,25 @@ const Mutation = new GraphQLObjectType({
   fields:{
     tweet:{
       type: TweetType,
-      // TODO: specify that one of the author's
-      // fields should not be null
-      args:{
-        authorID:{ type: new GraphQLNonNull(GraphQLID) },
-        text: { type: new GraphQLNonNull(GraphQLString) }
+      args:{ text: { type: new GraphQLNonNull(GraphQLString) }
       },
-      async resolve(parent, args){
-        const tweet = new Tweet({ text: args.text, authorID: args.authorID});
+      async resolve(parent, args, req){
+        const tweet = new Tweet({ text: args.text, authorID: req.user.id});
         const savedTweet = await tweet.save();
         return {
           text: savedTweet.text,
           authorID:savedTweet.authorID.toJSON(),
           id: savedTweet._id
         };
+      }
+    },
+    follow:{
+      type: UserType,
+      args:{ toFollowId: {type: new GraphQLNonNull(GraphQLID) } },
+      async resolve(parent, args, req){
+        const user = await User.findById(req.user.id);
+        user.following.push(args.toFollowId);
+        return user.save();
       }
     }
   }
