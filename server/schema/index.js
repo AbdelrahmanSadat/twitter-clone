@@ -48,6 +48,21 @@ const UserType = new GraphQLObjectType({
         const tweets = await Tweet.find({authorID: parent.id});
         return tweets;
       }
+    },
+    timeline:{
+      type: new GraphQLList(TweetType),
+      async resolve(parent, args){
+        const user = await User.findById(parent.id);
+        const userIDList = user.following.slice();
+        userIDList.push(parent.id);
+        console.log(userIDList)
+        const timeline = await Tweet
+        .find({ authorID: { $in: userIDList}})
+        .sort({updatedAt: "desc"})
+        .exec();
+        // sorting by date
+        return timeline;
+      }
     }
   })
 });
