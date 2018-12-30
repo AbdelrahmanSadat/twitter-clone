@@ -52,16 +52,23 @@ const UserType = new GraphQLObjectType({
     timeline:{
       type: new GraphQLList(TweetType),
       async resolve(parent, args){
-        const user = await User.findById(parent.id);
-        const userIDList = user.following.slice();
+        const userIDList = parent.following;
         userIDList.push(parent.id);
-        console.log(userIDList)
         const timeline = await Tweet
         .find({ authorID: { $in: userIDList}})
         .sort({updatedAt: "desc"})
         .exec();
-        // sorting by date
         return timeline;
+      }
+    },
+    favorites:{
+      type: new GraphQLList(TweetType),
+      async resolve(parent, args){
+        const favorites = await Tweet
+        .find({_id: {$in: parent.favorites}})
+        .sort({updatedAt: "desc"})
+        .exec();
+        return favorites;
       }
     }
   })
@@ -135,6 +142,15 @@ const Mutation = new GraphQLObjectType({
       async resolve(parent, args, req){
         const user = await User.findById(req.user.id);
         user.following.push(args.toFollowId);
+        return user.save();
+      }
+    },
+    favorite:{
+      type: UserType,
+      args: { tweetId: {type: new GraphQLNonNull(GraphQLID)} },
+      async resolve(parent, args, req){
+        const user = await User.findById(req.user.id);
+        user.favorites.push(args.tweetId);
         return user.save();
       }
     }
