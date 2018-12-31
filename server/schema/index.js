@@ -1,6 +1,7 @@
 const graphql = require("graphql");
 const graphqlISODate = require("graphql-iso-date");
-const passport = require("passport");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 const User = require("../models/user.js");
 const Tweet = require("../models/tweet.js");
 
@@ -108,8 +109,11 @@ const RootQuery = new GraphQLObjectType({
       },
       currentUser:{
         type: UserType,
-        resolve(parent, args, req){
-          return req.user;
+        async resolve(parent, args, req){
+          if(!req.user)
+            throw new Error("You must be logged in.");
+          const user = await User.findById(req.user.id);
+          return user;
         }
       },
       tweet:{
@@ -130,6 +134,8 @@ const Mutation = new GraphQLObjectType({
       args:{ text: { type: new GraphQLNonNull(GraphQLString) }
       },
       async resolve(parent, args, req){
+        if(!req.user)
+          throw new Error("You must be logged in.");
         const tweet = new Tweet({ text: args.text, authorID: req.user.id});
         const savedTweet = await tweet.save();
         savedTweet.authorID = savedTweet.authorID.toJSON();
@@ -140,7 +146,13 @@ const Mutation = new GraphQLObjectType({
       type: UserType,
       args:{ toFollowId: {type: new GraphQLNonNull(GraphQLID) } },
       async resolve(parent, args, req){
+        if(!req.user)
+          throw new Error("You must be logged in.");
+        if(req.user.id == args.toFollowId)
+          throw new Error("You can't follow yourself, you narcissistic bastard.");
         const user = await User.findById(req.user.id);
+        if(!user.isVerified)
+          throw new Error("The user you're trying to follow is not yet verified");
         user.following.push(args.toFollowId);
         return user.save();
       }
@@ -149,9 +161,54 @@ const Mutation = new GraphQLObjectType({
       type: UserType,
       args: { tweetId: {type: new GraphQLNonNull(GraphQLID)} },
       async resolve(parent, args, req){
+        if(!req.user)
+          throw new Error("You must be logged in.");
         const user = await User.findById(req.user.id);
         user.favorites.push(args.tweetId);
         return user.save();
+      }
+    },
+    // TODO: Send email for verification on registering
+    register:{
+      type: GraphQLString,
+      args: {
+        email:{ type: new GraphQLNonNull(GraphQLString)},
+        password: { type: new GraphQLNonNull(GraphQLString)}
+      },
+      async resolve(parent, args, req){
+        const user = await User.create({
+          email: args.email,
+          password: args.password
+        });
+        // TODO: set audience and issuer fields on token?
+        return jwt.sign(
+          {id: user.id, email: user.email},
+          process.env.JWT_SECRET,
+          { expiresIn: "24h" }
+        )
+      }
+    },
+    // TODO: Should login be a mutation?
+    login:{
+      type: GraphQLString,
+      args: {
+        email:{ type: new GraphQLNonNull(GraphQLString)},
+        password: { type: new GraphQLNonNull(GraphQLString)}
+      },
+      async resolve(parent, args, req){
+        const user = await User.findOne({ email: args.email });
+        if(!user)
+          throw new Error("No user exists with that email.");
+        const passwordMatched = await bcrypt.compare(args.password, user.password);
+        if(!passwordMatched)
+          throw new Error("Password incorrect.");
+
+        // TODO: set audience and issuer fields on token?
+        return jwt.sign(
+          {id: user.id, email: user.email},
+          process.env.JWT_SECRET,
+          { expiresIn: "24h" }
+        )
       }
     }
   }

@@ -1,14 +1,13 @@
-var express = require('express');
-var router = express.Router();
-var graphqlHTTP = require('express-graphql');
-var schema = require('../schema');
+const express = require('express');
+const router = express.Router();
+const graphqlHTTP = require('express-graphql');
+const schema = require('../schema');
+const jwt = require('express-jwt');
 
-router.use("/graphql",(req, res, next)=>{
-  if(req.isAuthenticated())
-    return next();
-  else
-    res.status(401).send("User not logged in");
-})
+router.use('/graphql', jwt({
+  secret: process.env.JWT_SECRET,
+  credentialsRequired:false
+}));
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -24,19 +23,5 @@ router.post('/graphql', graphqlHTTP({
   schema: schema,
   graphiql: false
 }));
-
-// TODO: remove this route
-
-router.get('/secret',
-  (req, res, next)=>{
-      if(req.isAuthenticated())
-        return next();
-      else
-        return res.send("Not Authenticated")
-  },
-  (req, res)=>{
-    res.send("Authenticated");
-  }
-)
 
 module.exports = router;
