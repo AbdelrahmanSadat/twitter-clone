@@ -9,6 +9,7 @@ const Tweet = require("../models/tweet.js");
 const {
   GraphQLObjectType,
   GraphQLString,
+  GraphQLBoolean,
   GraphQLSchema,
   GraphQLID,
   GraphQLInt,
@@ -29,6 +30,7 @@ const UserType = new GraphQLObjectType({
   fields: ()=>({
     id: {type: GraphQLID},
     email: {type: GraphQLString},
+    isVerified: {type: GraphQLBoolean}
     following: {
       type: new GraphQLList(UserType),
       async resolve(parent, args){
@@ -151,8 +153,6 @@ const Mutation = new GraphQLObjectType({
         if(req.user.id == args.toFollowId)
           throw new Error("You can't follow yourself, you narcissistic bastard.");
         const user = await User.findById(req.user.id);
-        if(!user.isVerified)
-          throw new Error("The user you're trying to follow is not yet verified");
         user.following.push(args.toFollowId);
         return user.save();
       }
@@ -170,7 +170,7 @@ const Mutation = new GraphQLObjectType({
     },
     // TODO: Send email for verification on registering
     register:{
-      type: GraphQLString,
+      type: UserType,
       args: {
         email:{ type: new GraphQLNonNull(GraphQLString)},
         password: { type: new GraphQLNonNull(GraphQLString)}
@@ -181,11 +181,8 @@ const Mutation = new GraphQLObjectType({
           password: args.password
         });
         // TODO: set audience and issuer fields on token?
-        return jwt.sign(
-          {id: user.id, email: user.email},
-          process.env.JWT_SECRET,
-          { expiresIn: "24h" }
-        )
+        // TODO: what to return on registering?
+        return user
       }
     },
     // TODO: Should login be a mutation?
@@ -199,6 +196,8 @@ const Mutation = new GraphQLObjectType({
         const user = await User.findOne({ email: args.email });
         if(!user)
           throw new Error("No user exists with that email.");
+        if(!user.isVerified)
+          throw new Error("You need to be verified in order to log in");
         const passwordMatched = await bcrypt.compare(args.password, user.password);
         if(!passwordMatched)
           throw new Error("Password incorrect.");
