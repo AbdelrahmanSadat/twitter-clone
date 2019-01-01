@@ -2,6 +2,8 @@ const graphql = require("graphql");
 const graphqlISODate = require("graphql-iso-date");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const nodemailer = require("nodemailer");
+const helpers = require("../helpers");
 const User = require("../models/user.js");
 const Tweet = require("../models/tweet.js");
 
@@ -30,7 +32,7 @@ const UserType = new GraphQLObjectType({
   fields: ()=>({
     id: {type: GraphQLID},
     email: {type: GraphQLString},
-    isVerified: {type: GraphQLBoolean}
+    isVerified: {type: GraphQLBoolean},
     following: {
       type: new GraphQLList(UserType),
       async resolve(parent, args){
@@ -178,8 +180,18 @@ const Mutation = new GraphQLObjectType({
       async resolve(parent, args, req){
         const user = await User.create({
           email: args.email,
-          password: args.password
+          password: args.password,
+          verificationCode: helpers.randomCode()
         });
+
+        const mailOptions={
+          from:process.env.EMAIL_ID,
+          to: user.email,
+          subject: "Verification",
+          html:"Your verification code is "+user.verificationCode
+        }
+
+        const info = await helpers.transporter.sendMail(mailOptions);
         // TODO: set audience and issuer fields on token?
         // TODO: what to return on registering?
         return user
@@ -202,6 +214,54 @@ const Mutation = new GraphQLObjectType({
         if(!passwordMatched)
           throw new Error("Password incorrect.");
 
+        // TODO: set audience and issuer fields on token?
+        return jwt.sign(
+          {id: user.id, email: user.email},
+          process.env.JWT_SECRET,
+          { expiresIn: "24h" }
+        )
+      }
+    },
+    // TODO: should this be a mutation?
+    sendVerificationEmail:{
+      type: GraphQLString,
+      args:{ id: {type: new GraphQLNonNull(GraphQLID)} },
+      async resolve(parent, args){
+        const user = await User.findById(args.id);
+        if(user.isVerified || !user.verificationCode)
+          throw new Error("User already verified, or no verification code was found");
+        const mailOptions={
+          from:process.env.EMAIL_ID,
+          to: user.email,
+          subject: "Verification",
+          html:"Your verification code is "+user.verificationCode
+        }
+        const info = await helpers.transporter.sendMail(mailOptions);
+        return "Email sent";
+      }
+    },
+    verify:{
+      type: GraphQLString,
+      args: {
+        email: { type: new GraphQLNonNull(GraphQLString) } ,
+        password: { type: new GraphQLNonNull(GraphQLString)},
+        verificationCode: { type: new GraphQLNonNull(GraphQLInt) }
+      },
+      async resolve(parent, args){
+        const user = await User.findOne({email: args.email});
+        if(!user)
+          throw new Error("No user was found with this id");
+        if(user.isVerified)
+          throw new Error("User already verified");
+        const passwordMatched = await bcrypt.compare(args.password, user.password);
+        if(!passwordMatched)
+          throw new Error("Password is incorrect");
+        if(user.verificationCode != args.verificationCode)
+          throw new Error("Verification code incorrect");
+
+        user.verificationCode=undefined;
+        user.isVerified=true;
+        const verifiedUser = await user.save();
         // TODO: set audience and issuer fields on token?
         return jwt.sign(
           {id: user.id, email: user.email},
