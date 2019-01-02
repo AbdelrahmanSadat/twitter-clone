@@ -85,6 +85,7 @@ const TweetType = new GraphQLObjectType({
     id: {type: GraphQLID},
     authorID: {type: GraphQLID},
     text: {type: GraphQLString},
+    image: {type: GraphQLString},
     createdAt: {type: GraphQLDateTime},
     updatedAt: {type: GraphQLDateTime},
     author: {
@@ -101,10 +102,10 @@ const RootQuery = new GraphQLObjectType({
     fields: {
       user: {
         type: UserType,
-        // TODO: specify that at least one of the arguments needs
-        // to be nonNull
         args: { email:{type:GraphQLString}, id:{type:GraphQLID} },
         resolve(parent, args){
+          if(!args.email && !args.id)
+            throw new Error("Please provide an argument");
           if(args.id)
             return User.findById(args.id);
           else
@@ -135,12 +136,20 @@ const Mutation = new GraphQLObjectType({
   fields:{
     tweet:{
       type: TweetType,
-      args:{ text: { type: new GraphQLNonNull(GraphQLString) }
+      args:{
+        text: { type: GraphQLString },
+        image: { type: GraphQLString }
       },
       async resolve(parent, args, req){
         if(!req.user)
           throw new Error("You must be logged in.");
-        const tweet = new Tweet({ text: args.text, authorID: req.user.id});
+        if(!args.text && !args.image)
+          throw new Error("No arguments given");
+        const tweet = new Tweet({
+          text: args.text,
+          image: args.image,
+          authorID: req.user.id
+        });
         const savedTweet = await tweet.save();
         savedTweet.authorID = savedTweet.authorID.toJSON();
         return savedTweet;
@@ -170,7 +179,6 @@ const Mutation = new GraphQLObjectType({
         return user.save();
       }
     },
-    // TODO: Send email for verification on registering
     register:{
       type: UserType,
       args: {
