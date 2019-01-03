@@ -5,7 +5,16 @@ var logger = require('morgan');
 var mongoose = require('mongoose');
 var session = require("express-session");
 
-require('dotenv').config()
+require('dotenv').config();
+
+// Firebase setup
+var admin = require("firebase-admin");
+var serviceAccount = require(process.env.CREDENTIALS_ROUTE);
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: process.env.FIREBASE_DB_URL
+});
+
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');

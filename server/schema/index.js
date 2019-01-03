@@ -3,9 +3,11 @@ const graphqlISODate = require("graphql-iso-date");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
+const admin = require("firebase-admin");
 const helpers = require("../helpers");
 const User = require("../models/user.js");
 const Tweet = require("../models/tweet.js");
+const RegisterationToken = require("../models/registerationToken");
 
 // some js destructuring
 const {
@@ -156,27 +158,103 @@ const Mutation = new GraphQLObjectType({
       }
     },
     follow:{
-      type: UserType,
+      type: new GraphQLObjectType({
+        // TODO: change name
+        name: "followResponse",
+        fields:{
+          followedUser: {type: UserType},
+          notified: {type: GraphQLBoolean}
+        }
+      }),
       args:{ toFollowId: {type: new GraphQLNonNull(GraphQLID) } },
       async resolve(parent, args, req){
+        // Check if the user is logged in or trying to follow himself
         if(!req.user)
           throw new Error("You must be logged in.");
         if(req.user.id == args.toFollowId)
-          throw new Error("You can't follow yourself, you narcissistic bastard.");
+          throw new Error("You can't follow yourself.");
+        // Check if the user they're trying to follow exists
+        const followedUser = await User.findById(args.toFollowId);
+        if(!followedUser)
+          throw new Error("The user you're trying to follow doesn't exist.");
+        // Check if user already followed
         const user = await User.findById(req.user.id);
+        if(user.following.toString().includes(args.toFollowId))
+          throw new Error("Already following this user");
+
+        // Add a user to follow
         user.following.push(args.toFollowId);
-        return user.save();
+        const savedUser = await user.save();
+
+        // Send a notification to the followed user
+        // If the user wasn't notified successfully, set "notified" to false
+        try{
+          var notified = true;
+          const registerationToken = await RegisterationToken.find({
+            userId: followedUser._id
+          });
+          const message = {
+            data:{ follower:{ id: followedUser._id, email: followedUser.email } },
+            token: registerationToken.token
+          }
+          const sentMessage = await admin.messaging().send(message);
+        }catch(error){
+          if(error.code === 'messaging/invalid-registration-token' || error.code === 'messaging/registration-token-not-registered')
+            await registerationToken.remove();
+          notified = false;
+        }
+        return {followedUser: followedUser, notified: notified};
       }
     },
     favorite:{
-      type: UserType,
+      type: new GraphQLObjectType({
+        // TODO: change name
+        name: "favoriteResponse",
+        fields:{
+          tweet: {type: TweetType},
+          notified: {type: GraphQLBoolean}
+        }
+      }),
       args: { tweetId: {type: new GraphQLNonNull(GraphQLID)} },
       async resolve(parent, args, req){
+        // Check if user is logged in
         if(!req.user)
           throw new Error("You must be logged in.");
+        // Check if the tweet id is correct
+        const favoritedTweet = await Tweet.findById(args.tweetId);
+        if(!favoritedTweet)
+          throw new Error("Tweet id incorrect");
+        // Check if tweet is already favorited
         const user = await User.findById(req.user.id);
+        if(user.favorites.toString().includes(args.tweetId))
+          throw new Error("Tweet already favorited")
+
+        // Add favorited tweet to list of favorites
         user.favorites.push(args.tweetId);
-        return user.save();
+        const savedUser = await user.save();
+
+        // Send a notification to the followed user
+        // If the user wasn't notified successfully, set "notified" to false
+        try{
+          var notified = true;
+          const tweetAuthor = await user.findById(favoritedTweet.authorID);
+          const registerationToken = await RegisterationToken.find({
+            userId: tweetAuthor._id
+          });
+          const message = {
+            data:{
+              favoritedBy:{ id: tweetAuthor._id, email: tweetAuthor.email },
+              tweetId: args.tweetId
+            },
+            token: registerationToken.token
+          }
+          const sentMessage = await admin.messaging().send(message);
+        }catch(error){
+          if(error.code === 'messaging/invalid-registration-token' || error.code === 'messaging/registration-token-not-registered')
+            await registerationToken.remove();
+          notified=false
+        }
+        return {tweet: favoritedTweet, notified: notified};
       }
     },
     register:{
@@ -276,6 +354,35 @@ const Mutation = new GraphQLObjectType({
           process.env.JWT_SECRET,
           { expiresIn: "24h" }
         )
+      }
+    },
+    registerationToken:{
+      type: GraphQLBoolean,
+      args:{
+        token:{ type: new GraphQLNonNull(GraphQLString) },
+        userId: { type: new GraphQLNonNull(GraphQLID) }
+      },
+      async resolve(parent, args){
+        const user = await User.findById(args.userId);
+        if(!user)
+          throw new Error("Incorrect user id");
+
+        // If the user had a token, and it's different, overwrite the old token
+        const existingToken = await RegisterationToken.findOne({userId: args.userId});
+        if(existingToken){
+          if(existingToken.token == args.token)
+            throw new Error("Token already registered");
+          existingToken.token = args.token;
+          await existingToken.save();
+          return true
+        }
+        // If the user didn't have a registeration token before,
+        // create a new document for it
+        const token = await RegisterationToken.create({
+          token: args.token,
+          userId: args.userId
+        });
+        return true
       }
     }
   }
