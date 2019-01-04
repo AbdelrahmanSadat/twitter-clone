@@ -52,7 +52,7 @@ const UserType = new GraphQLObjectType({
     tweets:{
       type: new GraphQLList(TweetType),
       async resolve(parent, args){
-        const tweets = await Tweet.find({authorID: parent.id});
+        const tweets = await Tweet.find({authorId: parent.id});
         return tweets;
       }
     },
@@ -62,7 +62,7 @@ const UserType = new GraphQLObjectType({
         const userIDList = parent.following;
         userIDList.push(parent.id);
         const timeline = await Tweet
-        .find({ authorID: { $in: userIDList}})
+        .find({ authorId: { $in: userIDList}})
         .sort({updatedAt: "desc"})
         .exec();
         return timeline;
@@ -85,7 +85,7 @@ const TweetType = new GraphQLObjectType({
   name: 'Tweet',
   fields: ()=>({
     id: {type: GraphQLID},
-    authorID: {type: GraphQLID},
+    authorId: {type: GraphQLID},
     text: {type: GraphQLString},
     image: {type: GraphQLString},
     createdAt: {type: GraphQLDateTime},
@@ -93,7 +93,7 @@ const TweetType = new GraphQLObjectType({
     author: {
       type: UserType,
       resolve(parent, args){
-        return User.findById(parent.authorID);
+        return User.findById(parent.authorId);
       }
     }
   })
@@ -150,10 +150,10 @@ const Mutation = new GraphQLObjectType({
         const tweet = new Tweet({
           text: args.text,
           image: args.image,
-          authorID: req.user.id
+          authorId: req.user.id
         });
         const savedTweet = await tweet.save();
-        savedTweet.authorID = savedTweet.authorID.toJSON();
+        savedTweet.authorId = savedTweet.authorId.toJSON();
         return savedTweet;
       }
     },
@@ -175,8 +175,8 @@ const Mutation = new GraphQLObjectType({
           throw new Error("You can't follow yourself.");
         // Check if the user they're trying to follow exists
         const followedUser = await User.findById(args.toFollowId);
-        if(!followedUser)
-          throw new Error("The user you're trying to follow doesn't exist.");
+        if(!followedUser || !followedUser.isVerified)
+          throw new Error("The user you're trying to follow doesn't exist, or isn't verified.");
         // Check if user already followed
         const user = await User.findById(req.user.id);
         if(user.following.toString().includes(args.toFollowId))
@@ -186,6 +186,7 @@ const Mutation = new GraphQLObjectType({
         user.following.push(args.toFollowId);
         const savedUser = await user.save();
 
+        // TODO: better error handling
         // Send a notification to the followed user
         // If the user wasn't notified successfully, set "notified" to false
         try{
@@ -233,11 +234,12 @@ const Mutation = new GraphQLObjectType({
         user.favorites.push(args.tweetId);
         const savedUser = await user.save();
 
+        // TODO: better error handling
         // Send a notification to the followed user
         // If the user wasn't notified successfully, set "notified" to false
         try{
           var notified = true;
-          const tweetAuthor = await user.findById(favoritedTweet.authorID);
+          const tweetAuthor = await user.findById(favoritedTweet.authorId);
           const registerationToken = await RegisterationToken.find({
             userId: tweetAuthor._id
           });
