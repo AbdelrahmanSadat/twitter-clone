@@ -3,12 +3,11 @@ const nodemailer = require('nodemailer');
 const User = require('../models/user');
 const router = express.Router();
 
-// TODO: refactor to use promises
 
-// TODO: move functions to a separate file
-function randomCode(){
-  return Math.floor(Math.random()*9000)+1000;
-}
+
+// function randomCode(){
+//   return Math.floor(Math.random()*9000)+1000;
+// }
 
 // const smtpTransport = nodemailer.createTransport({
 //     service: "Gmail",

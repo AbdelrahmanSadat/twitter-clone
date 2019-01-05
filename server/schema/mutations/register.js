@@ -36,7 +36,6 @@ const register = {
     }
 
     const info = await helpers.transporter.sendMail(mailOptions);
-    // TODO: what to return on registering?
     return user
   }
 }

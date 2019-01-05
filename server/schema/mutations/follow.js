@@ -15,7 +15,6 @@ const {
 
 const follow = {
   type: new GraphQLObjectType({
-    // TODO: change name
     name: "followResponse",
     fields:{
       followedUser: {type: UserType},

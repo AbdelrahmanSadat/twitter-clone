@@ -15,7 +15,6 @@ const {
 
 const favorite = {
   type: new GraphQLObjectType({
-   // TODO: change name
    name: "favoriteResponse",
    fields:{
      tweet: {type: TweetType},
