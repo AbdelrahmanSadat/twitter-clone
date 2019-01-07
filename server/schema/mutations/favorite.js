@@ -7,6 +7,7 @@ const RegisterationToken = require("../../models/registerationToken");
 
 const {
   GraphQLObjectType,
+  GraphQLString,
   GraphQLBoolean,
   GraphQLID,
   GraphQLNonNull
@@ -18,7 +19,8 @@ const favorite = {
    name: "favoriteResponse",
    fields:{
      tweet: {type: TweetType},
-     notified: {type: GraphQLBoolean}
+     notified: {type: GraphQLBoolean},
+     message: {type: GraphQLString}
    }
   }),
   args: { tweetId: {type: new GraphQLNonNull(GraphQLID)} },
@@ -43,7 +45,6 @@ const favorite = {
    // Send a notification to the followed user
    // If the user wasn't notified successfully, set "notified" to false
    try{
-     var notified = true;
      const tweetAuthor = await user.findById(favoritedTweet.authorId);
      const registerationToken = await RegisterationToken.findOne({
        userId: tweetAuthor._id
@@ -56,10 +57,13 @@ const favorite = {
        token: registerationToken.token
      }
      const sentMessage = await admin.messaging().send(message);
+     var notified = true;
+     var message = "Done";
    }catch(error){
      if(error.code === 'messaging/invalid-registration-token' || error.code === 'messaging/registration-token-not-registered')
        await registerationToken.remove();
-     notified=false
+     notified = false;
+     message = error.message;
    }
    return {tweet: favoritedTweet, notified: notified};
   }

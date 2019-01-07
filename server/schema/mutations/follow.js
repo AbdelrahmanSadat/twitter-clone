@@ -18,7 +18,8 @@ const follow = {
     name: "followResponse",
     fields:{
       followedUser: {type: UserType},
-      notified: {type: GraphQLBoolean}
+      notified: {type: GraphQLBoolean},
+      message: {type: GraphQLString}
     }
   }),
   args:{ toFollowId: {type: new GraphQLNonNull(GraphQLID) } },
@@ -45,7 +46,6 @@ const follow = {
     // Send a notification to the followed user
     // If the user wasn't notified successfully, set "notified" to false
     try{
-      var notified = true;
       const registerationToken = await RegisterationToken.findOne({
         userId: followedUser._id
       });
@@ -54,12 +54,15 @@ const follow = {
         token: registerationToken.token
       }
       const sentMessage = await admin.messaging().send(message);
+      var notified = true;
+      var message = "Done";
     }catch(error){
       if(error.code === 'messaging/invalid-registration-token' || error.code === 'messaging/registration-token-not-registered')
         await registerationToken.remove();
       notified = false;
+      message = error.message
     }
-    return {followedUser: followedUser, notified: notified};
+    return {followedUser, notified, message};
   }
 }
 
