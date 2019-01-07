@@ -11,7 +11,7 @@ router.use('/graphql', jwt({
 }));
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', (req, res)=>{
   res.send("Express Server Running");
 });
 
@@ -26,12 +26,12 @@ router.post('/graphql', graphqlHTTP({
 }));
 
 // TODO: remove this route
-router.get('/upload', function(req, res){
+router.get('/upload', (req, res)=>{
   res.set('Content-Type', 'text/html');
   res.send(new Buffer('<form action="/upload" method="POST" enctype="multipart/form-data"><input type="file" name="image" /><input type="submit"/></form>'));
 });
 
-router.post('/upload', helpers.upload.single('image'), function(req, res){
+router.post('/upload', helpers.upload.single('image'), (req, res)=>{
   res.send({filename: req.file.filename});
   //   res.set('Content-Type', 'text/html');
   //   res.send(new Buffer(`<img src="http://localhost:3000/${req.file.filename}"/>`));

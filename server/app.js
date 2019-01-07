@@ -1,18 +1,18 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var mongoose = require('mongoose');
-var session = require("express-session");
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const mongoose = require('mongoose');
+const session = require("express-session");
 
 require('dotenv').config();
 
-var indexRouter = require('./routes/index');
-// var usersRouter = require('./routes/users');
+const indexRouter = require('./routes/index');
+// const usersRouter = require('./routes/users');
 
 // Firebase setup
-var admin = require("firebase-admin");
-var serviceAccount = require(process.env.CREDENTIALS_ROUTE);
+const admin = require("firebase-admin");
+const serviceAccount = require(process.env.CREDENTIALS_ROUTE);
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: process.env.FIREBASE_DB_URL
@@ -24,7 +24,7 @@ mongoose.connection.once("open", ()=>{
   console.log("Connected to the database");
 });
 
-var app = express();
+const app = express();
 
 app.use(logger('dev'));
 app.use(express.json());

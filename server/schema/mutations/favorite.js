@@ -45,7 +45,7 @@ const favorite = {
    try{
      var notified = true;
      const tweetAuthor = await user.findById(favoritedTweet.authorId);
-     const registerationToken = await RegisterationToken.find({
+     const registerationToken = await RegisterationToken.findOne({
        userId: tweetAuthor._id
      });
      const message = {

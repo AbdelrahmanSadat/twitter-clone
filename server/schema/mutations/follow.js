@@ -46,7 +46,7 @@ const follow = {
     // If the user wasn't notified successfully, set "notified" to false
     try{
       var notified = true;
-      const registerationToken = await RegisterationToken.find({
+      const registerationToken = await RegisterationToken.findOne({
         userId: followedUser._id
       });
       const message = {
