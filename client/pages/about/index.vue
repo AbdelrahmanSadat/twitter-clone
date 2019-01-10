@@ -1,15 +1,11 @@
 <template>
   <section class="container">
     <div>
-      Home page
+      About page
+      <nuxt-child/>
     </div>
   </section>
 </template>
-
-<script>
-export default {
-}
-</script>
 
 <style scoped>
 .container {
