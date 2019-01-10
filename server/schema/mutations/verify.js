@@ -20,7 +20,7 @@ const verify = {
   async resolve(parent, args){
     const user = await User.findOne({email: args.email});
     if(!user)
-      throw new Error("No user was found with this id");
+      throw new Error("No user was found with this email");
     if(user.isVerified)
       throw new Error("User already verified");
     const passwordMatched = await bcrypt.compare(args.password, user.password);
