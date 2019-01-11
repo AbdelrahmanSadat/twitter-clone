@@ -3,7 +3,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const mongoose = require('mongoose');
-const session = require("express-session");
+const cors = require('cors');
 
 require('dotenv').config();
 
@@ -31,6 +31,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'uploads')));
+app.use(cors( {origin:[process.env.CLIENT_URL], methods: "GET,POST,PUT,DELETE", credentials:true} ));
 
 app.use('/', indexRouter);
 // app.use('/users', usersRouter);

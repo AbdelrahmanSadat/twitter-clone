@@ -5,17 +5,17 @@
         <form v-on:submit.prevent="onSubmit" method="POST">
           <label>
             Email
-            <input type="email" name="email" placeholder="example@example.com" >
+            <input v-model="email" type="email" name="email" placeholder="example@example.com" >
           </label>
           <br>
           <label>
             Password
-            <input type="password" name="password" placeholder="Eight or more characters">
+            <input v-model="password" type="password" name="password" placeholder="Eight or more characters">
           </label>
           <br>
           <label for="password re-entry">
             Re-enter Password
-            <input type="password" name="password re-entry" placeholder="Please re-enter your password">
+            <input v-model="passwordReEnter" type="password" name="passwordReEnter" placeholder="Please re-enter your password">
           </label>
           <br>
           <button>Register</button>
@@ -25,11 +25,39 @@
 </template>
 
 <script>
+import axios from "axios";
+import gql from "graphql-tag";
+import { print } from "graphql";
+// TODO: Improve this -barely working- form
+// TODO: add some error handling
+
 export default {
+  data(){
+    return{
+      email:"",
+      password:"",
+      passwordReEnter:""
+    }
+  },
+
   methods:{
-    onSubmit(e){
-      // TODO: send request to backend server
-      console.log("Submitted")
+    async onSubmit(e){
+      const query = gql`
+        mutation register($email: String!, $password: String!){
+          register(email: $email, password: $password){
+            id
+          }
+        }
+      `
+      const res = await axios({ 
+        url: 'http://localhost:4000/graphql',
+        method: 'post',
+        data: { 
+          query: print(query),
+          variables: { email:this.email, password:this.password }
+         },
+      })
+      // TODO: redirect or display on succcess or failure
     }
   }
 }
