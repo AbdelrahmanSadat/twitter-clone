@@ -41,7 +41,7 @@ export default {
   },
 
   methods:{
-    async onSubmit(e){
+    async onSubmit(){
       const query = gql`
         mutation register($email: String!, $password: String!){
           register(email: $email, password: $password){

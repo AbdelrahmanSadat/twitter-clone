@@ -33,7 +33,7 @@ export default {
     }
   },
   methods:{
-    async onSubmit(e){
+    async onSubmit(){
       const query = gql`
         mutation login($email: String!, $password: String!){
           login(email: $email, password: $password)

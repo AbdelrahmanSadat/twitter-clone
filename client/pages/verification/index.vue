@@ -39,7 +39,7 @@ export default {
     }
   },
   methods:{
-    async onSubmit(e){
+    async onSubmit(){
       const query = gql`
         mutation verify($email: String!, $password: String!, $verificationCode: Int!){
           verify(email: $email, password: $password, verificationCode: $verificationCode)
