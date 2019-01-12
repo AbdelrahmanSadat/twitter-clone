@@ -34,6 +34,9 @@ module.exports = {
         })
       }
     }
-  }
+  },
+
+  // Plugins
+  plugins: [{ src: '~/plugins/persistedState.js', ssr: false }]
 }
 

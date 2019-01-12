@@ -49,7 +49,8 @@ export default {
       })
       // TODO: redirect or display on success and error
       console.log("Submitted")
-      this.$store.dispatch("setToken", res.data.data.login);
+      await this.$store.dispatch("setToken", res.data.data.login);
+      this.$router.push("timeline");
     }
   }
 }

@@ -58,6 +58,7 @@ export default {
          },
       })
       // TODO: redirect or display on succcess or failure
+      this.$router.push("verification");
     }
   }
 }
