@@ -12,42 +12,8 @@
 </template>
 
 <script>
-import axios from "axios";
 import gql from "graphql-tag";
-import { print } from "graphql";
-
-const fetchData = async function(store){
-  const query = gql`
-    {
-      currentUser{
-        timeline{
-          text,
-          image,
-          id,
-          author{
-            email
-          }
-        }
-      }
-    }
-  `
-
-  const res = await axios({
-    url: 'http://localhost:4000/graphql',
-    method: 'post',
-    headers:{
-      "Authorization": "Bearer "+store.state.token
-    },
-    data: {
-      query: print(query)
-    }
-  })
-  return res.data.data.currentUser.timeline
-}
-
-
-
-
+import apolloClient from '~/plugins/apolloClient.js'
 
 // TODO: add some error handling
 export default {
@@ -57,15 +23,28 @@ export default {
     }
   },
   methods:{
+    async fetchData(store){
+      const query = gql`
+        {
+          currentUser{
+            timeline{
+              text,
+              image,
+              id,
+              author{
+                email
+              }
+            }
+          }
+        }
+      `
 
+      const res = await apolloClient.query({ query })
+      return res.data.currentUser.timeline
+    }
   },
-  // async asyncData({ store }){
-  //   return{
-  //     timeline: await fetchData(store).catch(e=>console.log("something went wrong")),
-  //   }
-  // }
   async mounted(){
-    this.timeline = await fetchData(this.$store)
+    this.timeline = await this.fetchData(this.$store)
   }
 }
 </script>

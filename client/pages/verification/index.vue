@@ -25,9 +25,8 @@
 </template>
 
 <script>
-import axios from "axios";
 import gql from "graphql-tag";
-import { print } from "graphql";
+import apolloClient from "~/plugins/apolloClient.js"
 
 // TODO: add some error handling
 export default {
@@ -40,26 +39,24 @@ export default {
   },
   methods:{
     async onSubmit(){
-      const query = gql`
+      const mutation = gql`
         mutation verify($email: String!, $password: String!, $verificationCode: Int!){
           verify(email: $email, password: $password, verificationCode: $verificationCode)
         }
       `
-      const res = await axios({ 
-        url: 'http://localhost:4000/graphql',
-        method: 'post',
-        data: { 
-          query: print(query),
-          variables: { 
+
+      // TODO: redirect or display on success and error
+      const res = await apolloClient.mutate({
+        mutation,
+        variables: { 
             email:this.email, 
             password:this.password, 
             verificationCode: parseInt(this.verificationCode) 
           }
-         },
       })
-      // TODO: redirect or display on success and error
+      
       console.log("Submitted")
-      await this.$store.dispatch("setToken", res.data.data.verify);
+      await this.$store.dispatch("setToken", res.data.verify);
       this.$router.push("timeline");
     }
   }
