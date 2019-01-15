@@ -6,6 +6,7 @@
           <div v-for="tweet in timeline" :key="tweet.id">
             <h2>{{tweet.author.email}}</h2>
             <p>{{tweet.text}}</p>
+            <img v-if="tweet.image" :src="getImageURL(tweet.image)">
           </div>
       </div>
     </section>
@@ -16,6 +17,7 @@ import gql from "graphql-tag";
 import apolloClient from '~/plugins/apolloClient.js'
 
 // TODO: add some error handling
+// TODO: display images properly
 export default {
   data(){
     return{
@@ -41,6 +43,9 @@ export default {
 
       const res = await apolloClient.query({ query })
       return res.data.currentUser.timeline
+    },
+    getImageURL(name){
+      return "http://localhost:4000/images/"+name
     }
   },
   async mounted(){
