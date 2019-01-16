@@ -1,0 +1,105 @@
+<template>
+    <section class="container">
+      <div>
+          <h1>Profile</h1>
+          <br>
+          <h2>Email:</h2>
+          <p>{{user.email}}</p>
+          <br>
+          <h2>Followers</h2>
+          <p v-for="(follower, index) in user.followers" :key="index">{{follower.email}}</p>
+          <br>
+          <h2>Following</h2>
+          <p v-for="(following, index) in user.following" :key="index">{{following.email}}</p>
+          <br>
+          <h2>Tweets</h2>
+          <div v-for="(tweet, index) in user.tweets" :key="index">
+            <p>{{tweet.text}}</p>
+            <img v-if="tweet.image" :src="getImageURL(tweet.image)">
+          </div>
+          <br>
+          <h2>Favorites</h2>
+          <div v-for="(favorite, index) in user.favorites" :key="index">
+            <p>{{favorite.text}}</p>
+            <img v-if="favorite.image" :src="getImageURL(favorite.image)">
+          </div>
+          <br>
+      </div>
+    </section>
+</template>
+
+<script>
+import gql from "graphql-tag";
+import apolloClient from '~/plugins/apolloClient.js'
+
+// TODO: add some error handling
+// TODO: display images properly
+export default {
+  data(){
+    return{
+        user:{}
+    }
+  },
+  methods:{
+    getImageURL(name){
+      return process.env.API_BASE_URL+"/images/"+name
+    }
+  },
+  mounted(){
+    // this.timeline = await this.fetchData(this.$store)
+  },
+  async asyncData({params}){
+      const query = gql`
+        query user($id: ID!){
+          user(id: $id){
+            email,
+            tweets{
+              id,
+              text,
+              image,
+              author{
+                email,
+                id
+              }
+            },
+            favorites{
+              id,
+              text,
+              image,
+              author{
+                email,
+                id
+              }
+            },
+            following{
+              email,
+              id
+            },
+            followers{
+              email,
+              id
+            }
+          }
+        }
+      `
+      const res = await apolloClient.query({ 
+        query,
+        variables:{ id: params.id }  
+      })
+      return{
+        user: res.data.user
+      }
+  }
+}
+</script>
+
+<style scoped>
+/* TODO: remove this and add some styling */
+.container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+</style>

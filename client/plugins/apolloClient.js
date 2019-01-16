@@ -9,11 +9,13 @@ import fetch from 'node-fetch';
 import * as Cookies from 'js-cookie' 
 
 
-const httpLink = new HttpLink({ uri: 'http://localhost:4000/graphql', fetch: fetch});
+const httpLink = new HttpLink({ uri: process.env.API_BASE_URL+"/graphql", fetch: fetch});
 
 const authLink = setContext((_, { headers }) => {
-  // get the authentication token from local storage if it exists
-  const token = JSON.parse(Cookies.get("vuex")).token;
+  // get the authentication token from cookie if it exists
+  var token;
+  if(process.client)
+    token = JSON.parse(Cookies.get("vuex")).token;
   // return the headers to the context so httpLink can read them
   return {
     headers: {

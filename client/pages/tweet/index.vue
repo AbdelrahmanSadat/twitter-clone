@@ -63,7 +63,7 @@ export default {
         this.file = await this.$refs.file.files[0];
         let formData = new FormData();
         formData.append('image', this.file);
-        const res = await axios.post("http://localhost:4000/upload",
+        const res = await axios.post(process.env.API_BASE_URL+"/upload",
             formData,
             {
                 headers: {

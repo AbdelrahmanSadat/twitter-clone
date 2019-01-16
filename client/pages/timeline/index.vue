@@ -3,7 +3,7 @@
       <div>
           <h1>Timeline</h1>
           <br>
-          <div v-for="tweet in timeline" :key="tweet.id">
+          <div v-for="(tweet, index) in timeline" :key="index">
             <h2>{{tweet.author.email}}</h2>
             <p>{{tweet.text}}</p>
             <img v-if="tweet.image" :src="getImageURL(tweet.image)">
@@ -45,7 +45,7 @@ export default {
       return res.data.currentUser.timeline
     },
     getImageURL(name){
-      return "http://localhost:4000/images/"+name
+      return process.env.API_BASE_URL+"/images/"+name
     }
   },
   async mounted(){
