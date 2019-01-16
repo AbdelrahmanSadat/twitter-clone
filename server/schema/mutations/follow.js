@@ -50,19 +50,19 @@ const follow = {
         userId: followedUser._id
       });
       const message = {
-        data:{ follower:{ id: followedUser._id, email: followedUser.email } },
-        token: registerationToken.token
+        data:{ follower:{ id: followedUser._id.toString(), email: followedUser.email } },
+        token: registerationToken? registerationToken.token : ""
       }
       const sentMessage = await admin.messaging().send(message);
       var notified = true;
-      var message = "Done";
+      var responseMessage = "Done";
     }catch(error){
       if(error.code === 'messaging/invalid-registration-token' || error.code === 'messaging/registration-token-not-registered')
         await registerationToken.remove();
       notified = false;
-      message = error.message
+      responseMessage = error.message
     }
-    return {followedUser, notified, message};
+    return {followedUser, notified, message: responseMessage};
   }
 }
 

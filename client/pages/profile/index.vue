@@ -7,19 +7,19 @@
           <p>{{user.email}}</p>
           <br>
           <h2>Followers</h2>
-          <p v-for="(follower, index) in user.followers" :key="index">{{follower.email}}</p>
+          <p v-for="(follower, index) in user.followers" :key="'follower'+index">{{follower.email}}</p>
           <br>
           <h2>Following</h2>
-          <p v-for="(following, index) in user.following" :key="index">{{following.email}}</p>
+          <p v-for="(following, index) in user.following" :key="'following'+index">{{following.email}}</p>
           <br>
           <h2>Tweets</h2>
-          <div v-for="(tweet, index) in user.tweets" :key="index">
+          <div v-for="(tweet, index) in user.tweets" :key="'tweet'+index">
             <p>{{tweet.text}}</p>
             <img v-if="tweet.image" :src="getImageURL(tweet.image)">
           </div>
           <br>
           <h2>Favorites</h2>
-          <div v-for="(favorite, index) in user.favorites" :key="index">
+          <div v-for="(favorite, index) in user.favorites" :key="'favorite'+index">
             <p>{{favorite.text}}</p>
             <img v-if="favorite.image" :src="getImageURL(favorite.image)">
           </div>

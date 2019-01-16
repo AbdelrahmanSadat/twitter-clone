@@ -51,21 +51,21 @@ const favorite = {
      });
      const message = {
        data:{
-         favoritedBy:{ id: tweetAuthor._id, email: tweetAuthor.email },
+         favoritedBy:{ id: tweetAuthor._id.toString(), email: tweetAuthor.email },
          tweetId: args.tweetId
        },
-       token: registerationToken.token
+       token: registerationToken? registerationToken.token : ""
      }
      const sentMessage = await admin.messaging().send(message);
      var notified = true;
-     var message = "Done";
+     var responseMessage = "Done";
    }catch(error){
      if(error.code === 'messaging/invalid-registration-token' || error.code === 'messaging/registration-token-not-registered')
        await registerationToken.remove();
      notified = false;
-     message = error.message;
+     responseMessage = error.message;
    }
-   return {tweet: favoritedTweet, notified: notified};
+   return {tweet: favoritedTweet, notified: notified, message: responseMessage};
   }
 }
 

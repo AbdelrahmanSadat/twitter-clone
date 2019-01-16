@@ -14,8 +14,12 @@ const httpLink = new HttpLink({ uri: process.env.API_BASE_URL+"/graphql", fetch:
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from cookie if it exists
   var token;
-  if(process.client)
-    token = JSON.parse(Cookies.get("vuex")).token;
+  if(process.client){
+    const cookie = Cookies.get("vuex");
+    if(cookie)
+      token = JSON.parse(cookie).token;
+  }
+    
   // return the headers to the context so httpLink can read them
   return {
     headers: {
