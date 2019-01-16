@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import gql from "graphql-tag";
+import queries from "@/gql/queries"
 import apolloClient from '~/plugins/apolloClient.js'
 
 // TODO: add some error handling
@@ -25,23 +25,10 @@ export default {
     }
   },
   methods:{
-    async fetchData(store){
-      const query = gql`
-        {
-          currentUser{
-            timeline{
-              text,
-              image,
-              id,
-              author{
-                email
-              }
-            }
-          }
-        }
-      `
-
-      const res = await apolloClient.query({ query })
+    async fetchData(){
+      const res = await apolloClient.query({ 
+        query: queries.timeline
+      })
       return res.data.currentUser.timeline
     },
     getImageURL(name){
@@ -49,7 +36,7 @@ export default {
     }
   },
   async mounted(){
-    this.timeline = await this.fetchData(this.$store)
+    this.timeline = await this.fetchData()
   }
 }
 </script>

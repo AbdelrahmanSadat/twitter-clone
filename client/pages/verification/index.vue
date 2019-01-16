@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import gql from "graphql-tag";
+import mutations from "@/gql/mutations"
 import apolloClient from "~/plugins/apolloClient.js"
 
 // TODO: add some error handling
@@ -39,15 +39,9 @@ export default {
   },
   methods:{
     async onSubmit(){
-      const mutation = gql`
-        mutation verify($email: String!, $password: String!, $verificationCode: Int!){
-          verify(email: $email, password: $password, verificationCode: $verificationCode)
-        }
-      `
-
       // TODO: redirect or display on success and error
       const res = await apolloClient.mutate({
-        mutation,
+        mutation: mutations.verification,
         variables: { 
             email:this.email, 
             password:this.password, 

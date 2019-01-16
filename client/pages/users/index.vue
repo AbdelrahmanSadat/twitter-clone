@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import gql from "graphql-tag";
+import gql from "@/gql";
 import apolloClient from '~/plugins/apolloClient.js'
 
 // TODO: add some error handling
@@ -24,44 +24,16 @@ export default {
   },
   methods:{
     async follow(id){
-      const mutation = gql`
-        mutation follow($toFollowId: ID!){
-          follow(toFollowId: $toFollowId){
-            followedUser{
-              email,
-              id
-            },
-            notified,
-            message
-          }
-        }
-      `
       const res = await apolloClient.mutate({
-        mutation,
+        mutation: gql.mutations.follow,
         variables:{ toFollowId: id}
       })
       console.log(res)
     }
   },
   async mounted(){
-    const query = gql`
-      query{
-        user1: user(email:"b0@b.b"){
-          email,
-          id
-        },
-        user2: user(email:"b1@b.b"){
-          email,
-          id
-        },
-        user3: user(email:"b2@b.b"){
-          email,
-          id
-        }
-      }
-    `
     const res = await apolloClient.query({ 
-      query
+      query: gql.queries.simpleUserList
     })
     const users = [res.data.user1, res.data.user2, res.data.user3]
     this.users = users;

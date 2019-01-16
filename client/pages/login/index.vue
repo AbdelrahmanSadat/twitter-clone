@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import gql from "graphql-tag";
+import mutations from '@/gql/mutations'
 import apolloClient from "~/plugins/apolloClient.js"
 
 // TODO: add some error handling
@@ -32,16 +32,10 @@ export default {
     }
   },
   methods:{
-    async onSubmit(){
-      const mutation = gql`
-        mutation login($email: String!, $password: String!){
-          login(email: $email, password: $password)
-        }
-      `
-      
+    async onSubmit(){      
       // TODO: redirect or display on success and error
       const res = await apolloClient.mutate({
-        mutation,
+        mutation: mutations.login,
         variables: { email:this.email, password:this.password }
       })
       

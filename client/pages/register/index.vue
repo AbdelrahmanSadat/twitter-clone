@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import gql from "graphql-tag";
+import mutations from "@/gql/mutations"
 import apolloClient from "~/plugins/apolloClient.js"
 // TODO: Improve this -barely working- form
 // TODO: add some error handling
@@ -41,16 +41,8 @@ export default {
 
   methods:{
     async onSubmit(){
-      const mutation = gql`
-        mutation register($email: String!, $password: String!){
-          register(email: $email, password: $password){
-            id
-          }
-        }
-      `
-
       const res = await apolloClient.mutate({
-        mutation,
+        mutation: mutations.register,
         variables: { email:this.email, password:this.password }
       })
 

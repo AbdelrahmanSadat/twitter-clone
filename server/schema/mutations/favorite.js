@@ -51,7 +51,8 @@ const favorite = {
      });
      const message = {
        data:{
-         favoritedBy:{ id: tweetAuthor._id.toString(), email: tweetAuthor.email },
+         favoritedById: tweetAuthor._id.toString(), 
+         favoritedByEmail: tweetAuthor.email,
          tweetId: args.tweetId
        },
        token: registerationToken? registerationToken.token : ""

@@ -50,7 +50,10 @@ const follow = {
         userId: followedUser._id
       });
       const message = {
-        data:{ follower:{ id: followedUser._id.toString(), email: followedUser.email } },
+        data:{ 
+          followerId:followedUser._id.toString(), 
+          followerEmail: followedUser.email  
+        },
         token: registerationToken? registerationToken.token : ""
       }
       const sentMessage = await admin.messaging().send(message);

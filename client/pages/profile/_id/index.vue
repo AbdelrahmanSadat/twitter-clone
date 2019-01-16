@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import gql from "graphql-tag";
+import queries from "@/gql/queries";
 import apolloClient from '~/plugins/apolloClient.js'
 
 // TODO: add some error handling
@@ -49,41 +49,8 @@ export default {
     // this.timeline = await this.fetchData(this.$store)
   },
   async asyncData({params}){
-      const query = gql`
-        query user($id: ID!){
-          user(id: $id){
-            email,
-            tweets{
-              id,
-              text,
-              image,
-              author{
-                email,
-                id
-              }
-            },
-            favorites{
-              id,
-              text,
-              image,
-              author{
-                email,
-                id
-              }
-            },
-            following{
-              email,
-              id
-            },
-            followers{
-              email,
-              id
-            }
-          }
-        }
-      `
       const res = await apolloClient.query({ 
-        query,
+        query: queries.userProfile,
         variables:{ id: params.id }  
       })
       return{

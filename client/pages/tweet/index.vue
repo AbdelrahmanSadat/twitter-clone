@@ -21,9 +21,9 @@
 </template>
 
 <script>
-import gql from "graphql-tag";
+import mutations from "@/gql/mutations";
 import axios from "axios";
-import apolloClient from '~/plugins/apolloClient.js'
+import apolloClient from '~/plugins/apolloClient.js';
 
 // TODO: add some error handling
 export default {
@@ -36,20 +36,8 @@ export default {
   methods:{
     async onSubmit(store){
         const imageName = await this.uploadFile();
-        const mutation = gql`
-            mutation tweet($text: String, $image: String){
-                tweet(text: $text, image: $image){
-                    text,
-                    image,
-                    author{
-                        id,
-                        email
-                    }
-                }
-            }
-        `
         const res = await apolloClient.mutate({
-            mutation,
+            mutation: mutations.tweet,
             variables: { text: this.text, image:imageName}
         })
         console.log("Submitted")
