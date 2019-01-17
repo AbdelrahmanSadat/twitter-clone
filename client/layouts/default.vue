@@ -14,13 +14,13 @@
             <router-link to="/register" class="nav-link">Register</router-link>
           </li>
           <li class="nav-item">
-            <router-link to="/login" class="nav-link">Login</router-link>
-          </li>
-          <li class="nav-item">
             <router-link to="/verification" class="nav-link">verification</router-link>
           </li>
           <li class="nav-item">
-            <router-link to="/logout" class="nav-link">Logout(not implemented)</router-link>
+            <router-link to="/login" class="nav-link">Login</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link to="/logout" class="nav-link">Logout</router-link>
           </li>
           <li class="nav-item">
             <router-link to="/Profile" class="nav-link">Profile</router-link>

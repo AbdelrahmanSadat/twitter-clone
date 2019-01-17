@@ -3,13 +3,19 @@ export const state = () => ({
 })
 
 export const mutations = {
-  setToken (state, token) {
+  setToken(state, token) {
     state.token = token
+  },
+  deleteToken(state){
+    state.token = null
   }
 }
 
 export const actions = {
     setToken({commit}, token){
         commit("setToken", token);
+    },
+    deleteToken({commit}, token){
+      commit("deleteToken")
     }
 }

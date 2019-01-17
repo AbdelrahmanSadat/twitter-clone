@@ -47,6 +47,7 @@ module.exports = {
     { src: '~/plugins/apolloClient.js', ssr: true},
   ],
 
+  // Server-side middleware
   serverMiddleware: [ "@/serverMiddleware/cookieParser" ]
 }
 
