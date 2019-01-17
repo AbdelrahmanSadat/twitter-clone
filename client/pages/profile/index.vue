@@ -46,7 +46,6 @@ export default {
     }
   },
   async mounted(){
-    console.log(queries)
     const res = await apolloClient.query({ 
       query: queries.currentUserProfile
     })

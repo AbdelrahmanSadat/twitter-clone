@@ -1,14 +1,15 @@
 import gql from "graphql-tag"
 
 const query = gql`
-    {
+    query{
         currentUser{
             timeline{
                 text,
                 image,
                 id,
                 author{
-                    email
+                    email,
+                    id
                 }
             }
         }
