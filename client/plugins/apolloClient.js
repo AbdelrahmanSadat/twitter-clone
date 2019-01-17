@@ -9,34 +9,42 @@ import fetch from 'node-fetch';
 import * as Cookies from 'js-cookie' 
 
 
-const httpLink = new HttpLink({ uri: process.env.API_BASE_URL+"/graphql", fetch: fetch});
 
-const authLink = setContext((_, { headers }) => {
-  // get the authentication token from cookie if it exists
-  var token;
-  if(process.client){
-    const cookie = Cookies.get("vuex");
-    if(cookie)
-      token = JSON.parse(cookie).token;
-  }
-    
-  // return the headers to the context so httpLink can read them
-  return {
-    headers: {
-      ...headers,
-      authorization: token ? `Bearer ${token}` : "",
-    }
-  }
-});
-
-const apolloClient = new ApolloClient({
-  // Use an environment variable for the uri
-  link: authLink.concat(httpLink),
-  cache: new InMemoryCache()
-});
 
 // TODO: inject apolloClient into the vue instance...
-export default apolloClient
+export default ({req}, inject)=>{
+  const httpLink = new HttpLink({ uri: process.env.API_BASE_URL+"/graphql", fetch: fetch});
+  const authLink = setContext((_, { headers }) => {
+    // get the authentication token from cookie if it exists
+    var token;
+    if(process.client){
+      const cookie = Cookies.get("vuex");
+      if(cookie)
+        token = JSON.parse(cookie).token;
+    }
+    else{
+      const cookie = req.cookies.vuex;
+      if(cookie)
+        token = JSON.parse(cookie).token;
+    }
+      
+    // return the headers to the context so httpLink can read them
+    return {
+      headers: {
+        ...headers,
+        authorization: token ? `Bearer ${token}` : "",
+      }
+    }
+  });
+
+  const apolloClient = new ApolloClient({
+    link: authLink.concat(httpLink),
+    cache: new InMemoryCache()
+  });
+
+  inject('apolloClient', apolloClient)
+
+}
 
 
 // Injection:

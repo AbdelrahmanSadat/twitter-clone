@@ -14,7 +14,7 @@
 
 <script>
 import queries from "@/gql/queries"
-import apolloClient from '~/plugins/apolloClient.js'
+import query from "@/helpers/query"
 
 // TODO: add some error handling
 // TODO: display images properly
@@ -25,18 +25,18 @@ export default {
     }
   },
   methods:{
-    async fetchData(){
-      const res = await apolloClient.query({ 
-        query: queries.timeline
-      })
-      return res.data.currentUser.timeline
-    },
     getImageURL(name){
       return process.env.API_BASE_URL+"/images/"+name
     }
   },
-  async mounted(){
-    this.timeline = await this.fetchData()
+  // async mounted(){
+  //   this.timeline = await this.fetchData()
+  // },
+  async asyncData({app}){
+    const res = await query(app.$apolloClient, queries.timeline)
+    return{
+      timeline: await res.data.currentUser.timeline
+    }
   }
 }
 </script>

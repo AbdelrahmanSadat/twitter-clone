@@ -22,8 +22,8 @@
 
 <script>
 import mutations from "@/gql/mutations";
+import mutate from "@/helpers/mutate"
 import axios from "axios";
-import apolloClient from '~/plugins/apolloClient.js';
 
 // TODO: add some error handling
 export default {
@@ -36,10 +36,8 @@ export default {
   methods:{
     async onSubmit(store){
         const imageName = await this.uploadFile();
-        const res = await apolloClient.mutate({
-            mutation: mutations.tweet,
-            variables: { text: this.text, image:imageName}
-        })
+        const variables = { text: this.text, image:imageName}
+        const res = await mutate(this.$apolloClient, mutations.tweet, variables)
         console.log("Submitted")
         this.$router.push("timeline");
     },

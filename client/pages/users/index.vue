@@ -10,8 +10,8 @@
 </template>
 
 <script>
-import gql from "@/gql";
-import apolloClient from '~/plugins/apolloClient.js'
+import {queries, mutations} from "@/gql";
+import {query, mutate} from '@/helpers'
 
 // TODO: add some error handling
 // TODO: display images properly
@@ -24,20 +24,17 @@ export default {
   },
   methods:{
     async follow(id){
-      const res = await apolloClient.mutate({
-        mutation: gql.mutations.follow,
-        variables:{ toFollowId: id}
-      })
+      const variables = { toFollowId: id};
+      const res = await mutate(this.$apolloClient, mutations.follow, variables)
       console.log(res)
     }
   },
-  async mounted(){
-    const res = await apolloClient.query({ 
-      query: gql.queries.simpleUserList
-    })
+  async asyncData({app}){
+    const res = await query(app.$apolloClient, queries.simpleUserList)
     const users = [res.data.user1, res.data.user2, res.data.user3]
-    this.users = users;
-    console.log(this.users)
+    return{
+      users
+    }
   }
 }
 </script>

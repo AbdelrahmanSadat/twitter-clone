@@ -44,7 +44,9 @@ module.exports = {
   // Plugins
   plugins: [
     { src: '~/plugins/persistedState.js', ssr: false },
-    { src: '~/plugins/apolloClient.js', ssr: false},
-  ]
+    { src: '~/plugins/apolloClient.js', ssr: true},
+  ],
+
+  serverMiddleware: [ "@/serverMiddleware/cookieParser" ]
 }
 

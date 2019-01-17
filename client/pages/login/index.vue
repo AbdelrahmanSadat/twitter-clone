@@ -21,7 +21,7 @@
 
 <script>
 import mutations from '@/gql/mutations'
-import apolloClient from "~/plugins/apolloClient.js"
+import mutate from "@/helpers/mutate"
 
 // TODO: add some error handling
 export default {
@@ -34,10 +34,9 @@ export default {
   methods:{
     async onSubmit(){      
       // TODO: redirect or display on success and error
-      const res = await apolloClient.mutate({
-        mutation: mutations.login,
-        variables: { email:this.email, password:this.password }
-      })
+      const variables = { email:this.email, password:this.password }
+
+      const res = await mutate(this.$apolloClient, mutations.login, variables)
       
       // TODO: redirect or display on success and error
       console.log("Submitted")

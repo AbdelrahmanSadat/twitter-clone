@@ -30,7 +30,7 @@
 
 <script>
 import queries from '@/gql/queries'
-import apolloClient from '~/plugins/apolloClient.js'
+import query from '@/helpers/query'
 
 // TODO: add some error handling
 // TODO: display images properly
@@ -45,11 +45,11 @@ export default {
       return process.env.API_BASE_URL+"/images/"+name
     }
   },
-  async mounted(){
-    const res = await apolloClient.query({ 
-      query: queries.currentUserProfile
-    })
-    this.user = res.data.currentUser
+  async asyncData({app}){
+    const res = await query(app.$apolloClient, queries.currentUserProfile)
+    return{
+      user: res.data.currentUser
+    }
   }
 }
 </script>
