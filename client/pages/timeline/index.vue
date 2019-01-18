@@ -2,23 +2,23 @@
     <section class="container">
       <div>
           <h1>Timeline</h1>
+          <Tweets v-bind:tweets="timeline"/> 
           <br>
-          <div v-for="(tweet, index) in timeline" :key="index">
-            <h2>{{tweet.author.email}}</h2>
-            <p>{{tweet.text}}</p>
-            <img v-if="tweet.image" :src="getImageURL(tweet.image)">
-          </div>
       </div>
     </section>
 </template>
 
 <script>
+import Tweets from "@/components/Tweets.vue"
 import queries from "@/gql/queries"
 import query from "@/helpers/query"
 
 // TODO: add some error handling
 // TODO: display images properly
 export default {
+  components:{
+    Tweets
+  },
   data(){
     return{
       timeline:[],
@@ -29,9 +29,6 @@ export default {
       return process.env.API_BASE_URL+"/images/"+name
     }
   },
-  // async mounted(){
-  //   this.timeline = await this.fetchData()
-  // },
   async asyncData({app}){
     const res = await query(app.$apolloClient, queries.timeline)
     return{

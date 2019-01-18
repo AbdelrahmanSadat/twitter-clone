@@ -1,35 +1,35 @@
 <template>
   <div>
     <nav class="navbar navbar-expand navbar-light bg-light">
-      <router-link to="/" class="navbar-brand">Navbar</router-link>
+      <nuxt-link to="/" class="navbar-brand">Navbar</nuxt-link>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <router-link to="/" class="nav-link">Home</router-link>
+            <nuxt-link to="/" class="nav-link">Home</nuxt-link>
           </li>
           <li class="nav-item">
-            <router-link to="/register" class="nav-link">Register</router-link>
+            <nuxt-link to="/register" class="nav-link">Register</nuxt-link>
           </li>
           <li class="nav-item">
-            <router-link to="/verification" class="nav-link">verification</router-link>
+            <nuxt-link to="/verification" class="nav-link">verification</nuxt-link>
           </li>
           <li class="nav-item">
-            <router-link to="/login" class="nav-link">Login</router-link>
+            <nuxt-link to="/login" class="nav-link">Login</nuxt-link>
           </li>
           <li class="nav-item">
-            <router-link to="/logout" class="nav-link">Logout</router-link>
+            <nuxt-link to="/logout" class="nav-link">Logout</nuxt-link>
           </li>
           <li class="nav-item">
-            <router-link to="/Profile" class="nav-link">Profile</router-link>
+            <nuxt-link to="/Profile" class="nav-link">Profile</nuxt-link>
           </li>
           <li class="nav-item">
-            <router-link to="/timeline" class="nav-link">Timeline</router-link>
+            <nuxt-link to="/timeline" class="nav-link">Timeline</nuxt-link>
           </li>
           <li class="nav-item">
-            <router-link to="/users" class="nav-link">Users</router-link>
+            <nuxt-link to="/users" class="nav-link">Users</nuxt-link>
           </li>
         </ul>
       </div>
