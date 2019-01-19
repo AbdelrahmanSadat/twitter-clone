@@ -35,11 +35,14 @@ export default {
   },
   methods:{
     async onSubmit(store){
-        const imageName = await this.uploadFile();
-        const variables = { text: this.text, image:imageName}
-        const res = await mutate(this.$apolloClient, mutations.tweet, variables)
-        console.log("Submitted")
-        this.$router.push("timeline");
+      var imageName = null;
+      if(this.file){
+        imageName = await this.uploadFile();
+      }
+      const variables = { text: this.text, image:imageName}
+      const res = await mutate(this.$apolloClient, mutations.tweet, variables)
+      console.log("Submitted")
+      this.$router.push("timeline");
     },
     onFileChange(){
         this.file = this.$refs.file.files[0];

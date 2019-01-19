@@ -29,6 +29,9 @@
             <nuxt-link to="/timeline" class="nav-link">Timeline</nuxt-link>
           </li>
           <li class="nav-item">
+            <nuxt-link to="/tweet" class="nav-link">Tweet</nuxt-link>
+          </li>
+          <li class="nav-item">
             <nuxt-link to="/users" class="nav-link">Users</nuxt-link>
           </li>
         </ul>
