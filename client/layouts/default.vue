@@ -10,25 +10,25 @@
           <li class="nav-item">
             <nuxt-link to="/" class="nav-link">Home</nuxt-link>
           </li>
-          <li class="nav-item">
+          <li v-show="!loggedIn" class="nav-item">
             <nuxt-link to="/register" class="nav-link">Register</nuxt-link>
           </li>
-          <li class="nav-item">
+          <li v-show="!loggedIn" class="nav-item">
             <nuxt-link to="/verification" class="nav-link">verification</nuxt-link>
           </li>
-          <li class="nav-item">
+          <li v-show="!loggedIn" class="nav-item">
             <nuxt-link to="/login" class="nav-link">Login</nuxt-link>
           </li>
-          <li class="nav-item">
+          <li v-show="loggedIn" class="nav-item">
             <nuxt-link to="/logout" class="nav-link">Logout</nuxt-link>
           </li>
-          <li class="nav-item">
+          <li v-show="loggedIn" class="nav-item">
             <nuxt-link to="/Profile" class="nav-link">Profile</nuxt-link>
           </li>
-          <li class="nav-item">
+          <li v-show="loggedIn" class="nav-item">
             <nuxt-link to="/timeline" class="nav-link">Timeline</nuxt-link>
           </li>
-          <li class="nav-item">
+          <li v-show="loggedIn" class="nav-item">
             <nuxt-link to="/tweet" class="nav-link">Tweet</nuxt-link>
           </li>
           <li class="nav-item">
@@ -45,7 +45,14 @@
 <script>
 import bootstrapCSS from "bootstrap/dist/css/bootstrap.min.css"
 export default {
-  
+  computed: {
+    loggedIn: function () {
+      if(this.$store.state.token && this.$store.state.token.length>0)
+        return true
+      else
+        return false
+    }
+  }
 }
 </script>
 
