@@ -10,8 +10,14 @@ module.exports = {
       { hid: 'description', name: 'description', content: 'Nuxt.js project' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
-    ]
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      // { rel: 'script', href: '/onMessage.js' }
+      // { rel: 'manifest', href: '/manifest.json' }
+    ],
+    // script: [
+    //   { src: '/onMessage.js' },
+    //   { src: '/fcm.js' }
+    // ]
   },
   /*
   ** Customize the progress bar color
@@ -38,13 +44,35 @@ module.exports = {
 
   // Environment variables
   env: {
-    API_BASE_URL: process.env.API_BASE_URL || 'http://localhost:4000'
+    API_BASE_URL: process.env.API_BASE_URL || 'http://localhost:4000',
+  },
+
+  // Modules
+  modules: [
+    '@nuxtjs/pwa',
+  ],
+
+  // Workbox module (part of the PWA nuxt module)
+  // TODO: remove dev option
+  workbox: {
+    dev:  true,
+    importScripts: [
+      'firebase-messaging-sw.js'
+    ],
+  },
+
+  // Manifest module (part of the PWA nuxt module)
+  manifest: {
+      "short_name": "Clone",
+      "name": "Twitter Clone",
+      "gcm_sender_id": "103953800507"
   },
 
   // Plugins
   plugins: [
     { src: '~/plugins/persistedState.js', ssr: false },
     { src: '~/plugins/apolloClient.js', ssr: true},
+    { src: '~/plugins/fcm.js', ssr: false}
   ],
 
   // Server-side middleware

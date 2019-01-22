@@ -4,6 +4,7 @@ const query = gql`
 query{
     currentUser{
       email,
+      id,
       tweets{
         id,
         text,
