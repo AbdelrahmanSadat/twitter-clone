@@ -50,7 +50,7 @@ export default {
       
       console.log("Submitted")
       await this.$store.dispatch("setToken", res.data.verify);
-      this.$router.push("timeline");
+      this.$router.push("/", ()=>this.$router.go(0));
     }
   }
 }
