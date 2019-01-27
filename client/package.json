@@ -13,6 +13,7 @@
     "precommit": "npm run lint"
   },
   "dependencies": {
+    "@nuxtjs/dotenv": "^1.3.0",
     "@nuxtjs/pwa": "^2.6.0",
     "apollo-cache-inmemory": "^1.3.12",
     "apollo-client": "^2.4.8",
@@ -22,6 +23,7 @@
     "axios": "^0.18.0",
     "bootstrap": "^4.2.1",
     "cookie-parser": "^1.4.3",
+    "dotenv": "^6.2.0",
     "firebase": "^5.8.0",
     "graphql": "^14.0.2",
     "graphql-tag": "^2.10.0",

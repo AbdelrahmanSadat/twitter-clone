@@ -6,49 +6,49 @@ export default ({app}, inject)=>{
     // Initialize Firebase
     if(! firebase.apps.length){
         var config = {
-            apiKey: "AIzaSyA6-lMokeuad62QrAfrlzh_LAiGcVp9m8w",
-            authDomain: "twitterapiclone.firebaseapp.com",
-            databaseURL: "https://twitterapiclone.firebaseio.com",
-            projectId: "twitterapiclone",
-            storageBucket: "twitterapiclone.appspot.com",
-            messagingSenderId: "911177940730"
+            apiKey: process.env.API_KEY,
+            authDomain: process.env.AUTH_DOMAIN,
+            databaseURL: process.env.DATABASE_URL,
+            projectId: process.env.PROJECT_ID,
+            storageBucket: process.env.STORAGE_BUCKET,
+            messagingSenderId: process.env.MESSAGING_SENDER_ID
         };
         firebase.initializeApp(config);
     }
 
     const messaging = firebase.messaging();
 
-    messaging.usePublicVapidKey("BGf-_iUlVQgAiM6w83R9Mt97C8XbAyC9o0pw6WvJh83waiDOYVvf67U6IXOj7vKjGyQpPwoMFuPOTtVluR4XdEk")
+    messaging.usePublicVapidKey(process.env.PUBLIC_VAPID_KEY)
 
-        messaging.requestPermission().then(function() {
-            console.log('Notification permission granted.');
+    messaging.requestPermission().then(function() {
+        console.log('Notification permission granted.');
 
-            messaging.getToken().then(async function(currentToken) {
-                if (currentToken) {
-                    const currentUserQuery = await query(app.$apolloClient, queries.currentUser)
-                    const currentUserId = currentUserQuery.data.currentUser.id
-                    const variables = {
-                        userId: currentUserId,
-                        token: currentToken
-                    }
-                    const registerationToken = await mutate(app.$apolloClient, mutations.registerationToken, variables)
-                //   sendTokenToServer(currentToken);
-                //   updateUIForPushEnabled(currentToken);
-                } else {
-                // Show permission request.
-                console.log('No Instance ID token available. Request permission to generate one.');
-                // Show permission UI.
-                //   updateUIForPushPermissionRequired();
-                //   setTokenSentToServer(false);
+        messaging.getToken().then(async function(currentToken) {
+            if (currentToken) {
+                const currentUserQuery = await query(app.$apolloClient, queries.currentUser)
+                const currentUserId = currentUserQuery.data.currentUser.id
+                const variables = {
+                    userId: currentUserId,
+                    token: currentToken
                 }
-            }).catch(function(err) {
-                console.log('An error occurred while retrieving token. ', err);
-                // showToken('Error retrieving Instance ID token. ', err);
-                // setTokenSentToServer(false);
-            });
-
+                const registerationToken = await mutate(app.$apolloClient, mutations.registerationToken, variables)
+            //   sendTokenToServer(currentToken);
+            //   updateUIForPushEnabled(currentToken);
+            } else {
+            // Show permission request.
+            console.log('No Instance ID token available. Request permission to generate one.');
+            // Show permission UI.
+            //   updateUIForPushPermissionRequired();
+            //   setTokenSentToServer(false);
+            }
         }).catch(function(err) {
-            console.log('Unable to get permission to notify.', err);
+            console.log('An error occurred while retrieving token. ', err);
+            // showToken('Error retrieving Instance ID token. ', err);
+            // setTokenSentToServer(false);
+        });
+
+    }).catch(function(err) {
+        console.log('Unable to get permission to notify.', err);
     });
 
     // TODO: ???

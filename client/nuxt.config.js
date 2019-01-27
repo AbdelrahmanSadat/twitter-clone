@@ -42,14 +42,10 @@ module.exports = {
     }
   },
 
-  // Environment variables
-  env: {
-    API_BASE_URL: process.env.API_BASE_URL || 'http://localhost:4000',
-  },
-
   // Modules
   modules: [
     '@nuxtjs/pwa',
+    '@nuxtjs/dotenv'
   ],
 
   // Workbox module (part of the PWA nuxt module)
