@@ -1,9 +1,4 @@
-export default async function(client, mutation, variables, refetchQueries, awaitRefetchQueries){
-    const res = await client.mutate({ 
-      mutation,
-      variables,
-      refetchQueries,
-      awaitRefetchQueries
-    })
+export default async function(client, options){
+    const res = await client.mutate(options)
     return res
 }

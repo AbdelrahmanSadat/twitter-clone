@@ -26,7 +26,8 @@ export default {
     }
   },
   async asyncData({app}){
-    const res = await query(app.$apolloClient, queries.currentUserProfile)
+    const options = { query: queries.currentUserProfile }
+    const res = await query(app.$apolloClient, options)
     return{
       user: res.data.currentUser
     }

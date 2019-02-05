@@ -35,8 +35,8 @@ export default {
     async onSubmit(){      
       // TODO: redirect or display on success and error
       const variables = { email:this.email, password:this.password }
-
-      const res = await mutate(this.$apolloClient, mutations.login, variables)
+      const options = { mutation: mutations.login, variables }
+      const res = await mutate(this.$apolloClient, options)
       
       // TODO: redirect or display on success and error
       console.log("Submitted")

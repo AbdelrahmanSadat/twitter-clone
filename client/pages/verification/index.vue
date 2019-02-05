@@ -45,8 +45,8 @@ export default {
         password:this.password, 
         verificationCode: parseInt(this.verificationCode) 
       }
-      
-      const res = await mutate(this.$apolloClient, mutations.verification, variables)
+      const options = { mutation: mutations.verification, variables }
+      const res = await mutate(this.$apolloClient, options)
       
       console.log("Submitted")
       await this.$store.dispatch("setToken", res.data.verify);

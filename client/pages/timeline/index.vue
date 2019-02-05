@@ -30,7 +30,8 @@ export default {
     }
   },
   async asyncData({app}){
-    const res = await query(app.$apolloClient, queries.timeline)
+    const options = { query: queries.timeline}
+    const res = await query(app.$apolloClient, options)
     return{
       timeline: await res.data.currentUser.timeline
     }

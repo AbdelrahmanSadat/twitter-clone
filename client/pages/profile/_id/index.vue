@@ -26,8 +26,9 @@ export default {
     }
   },
   async asyncData({app, params}){
-    const variables = { id: params.id }  
-    const res = await query(app.$apolloClient, queries.userProfile, variables)
+    const variables = { id: params.id }
+    const options = { query: queries.userProfile, variables }
+    const res = await query(app.$apolloClient, options)
     return{
       user: res.data.user
     }

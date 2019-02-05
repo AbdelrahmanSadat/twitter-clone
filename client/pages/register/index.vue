@@ -42,7 +42,8 @@ export default {
   methods:{
     async onSubmit(){
       const variables = { email:this.email, password:this.password }
-      const res = await mutate(this.$apolloClient, mutations.register, variables)
+      const options = { mutation: mutations.register, variables }
+      const res = await mutate(this.$apolloClient, options)
 
       // TODO: redirect or display on succcess or failure
       this.$router.push("verification");

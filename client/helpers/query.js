@@ -1,8 +1,4 @@
-export default async function(client, query, variables){
-    const res = await client.query({ 
-      query,
-      variables,
-      prefetch: true
-    })
+export default async function(client, options){
+    const res = await client.query({...options, prefetch: true})
     return res
 }

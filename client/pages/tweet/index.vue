@@ -43,7 +43,8 @@ export default {
       const variables = { text: this.text, image:imageName}
       const refetchQueries = [{query: queries.timeline}, {query: queries.currentUserProfile}]
       const awaitRefetchQueries = true
-      const res = await mutate(this.$apolloClient, mutations.tweet, variables, refetchQueries, awaitRefetchQueries)
+      const options = {mutation: mutations.tweet, variables, refetchQueries, awaitRefetchQueries}
+      const res = await mutate(this.$apolloClient, options)
       console.log("Submitted")
       this.$router.push("timeline");
     },
