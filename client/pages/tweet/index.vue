@@ -22,7 +22,8 @@
 
 <script>
 import mutations from "@/gql/mutations";
-import mutate from "@/helpers/mutate"
+import mutate from "@/helpers/mutate";
+import queries from "@/gql/queries";
 import axios from "axios";
 
 // TODO: add some error handling
@@ -40,7 +41,9 @@ export default {
         imageName = await this.uploadFile();
       }
       const variables = { text: this.text, image:imageName}
-      const res = await mutate(this.$apolloClient, mutations.tweet, variables)
+      const refetchQueries = [{query: queries.timeline}, {query: queries.currentUserProfile}]
+      const awaitRefetchQueries = true
+      const res = await mutate(this.$apolloClient, mutations.tweet, variables, refetchQueries, awaitRefetchQueries)
       console.log("Submitted")
       this.$router.push("timeline");
     },

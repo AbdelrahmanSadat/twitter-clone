@@ -39,7 +39,8 @@ export default ({req}, inject)=>{
 
   const apolloClient = new ApolloClient({
     link: authLink.concat(httpLink),
-    cache: new InMemoryCache()
+    cache: new InMemoryCache(),
+    ssrMode: true
   });
 
   inject('apolloClient', apolloClient)

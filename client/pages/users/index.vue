@@ -25,7 +25,9 @@ export default {
   methods:{
     async follow(id){
       const variables = { toFollowId: id};
-      const res = await mutate(this.$apolloClient, mutations.follow, variables)
+      const refetchQueries = [{query: queries.timeline}, {query: queries.currentUserProfile}]
+      const awaitRefetchQueries = true
+      const res = await mutate(this.$apolloClient, mutations.follow, variables, refetchQueries, awaitRefetchQueries)
       console.log(res)
     }
   },

@@ -5,6 +5,7 @@ const query = gql`
         tweet(text: $text, image: $image){
             text,
             image,
+            id,
             author{
                 id,
                 email
