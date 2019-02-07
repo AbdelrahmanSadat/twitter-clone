@@ -25,13 +25,19 @@ export default ({app}, inject)=>{
 
         messaging.getToken().then(async function(currentToken) {
             if (currentToken) {
-                const currentUserQuery = await query(app.$apolloClient, queries.currentUser)
+                const currentUserQuery = await query(app.$apolloClient, { query: queries.currentUser } )
                 const currentUserId = currentUserQuery.data.currentUser.id
                 const variables = {
                     userId: currentUserId,
                     token: currentToken
                 }
-                const registerationToken = await mutate(app.$apolloClient, mutations.registerationToken, variables)
+                const registerationToken = await mutate(
+                    app.$apolloClient, 
+                    {
+                        mutation: mutations.registerationToken, 
+                        variables
+                    }
+                )
             //   sendTokenToServer(currentToken);
             //   updateUIForPushEnabled(currentToken);
             } else {
@@ -60,13 +66,18 @@ export default ({app}, inject)=>{
             //setTokenSentToServer(false);
             //Send Instance ID token to app server.
             //sendTokenToServer(refreshedToken);
-            const currentUserQuery = await query(app.$apolloClient, queries.currentUser)
+            const currentUserQuery = await query(app.$apolloClient, {query:queries.currentUser})
             const currentUserId = currentUserQuery.data.currentUser.id
             const variables = {
                 userId: currentUserId,
                 token: currentToken
             }
-            const registerationToken = await mutate(app.$apolloClient, mutations.registerationToken, variables)
+            const registerationToken = await mutate(app.$apolloClient, 
+                {
+                    mutation: mutations.registerationToken, 
+                    variables
+                }
+            )
             
         }).catch(function(err) {
           console.log('Unable to retrieve refreshed token ', err);
