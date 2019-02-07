@@ -7,8 +7,9 @@
 // TODO: add some error handling
 export default {
   async mounted(){
-      await this.$store.dispatch("deleteToken");
-      this.$router.push("/", ()=>this.$router.go(0));
+    await this.$store.dispatch("deleteToken");
+    await this.$apolloClient.resetStore();
+    this.$router.push("/");
   }
 }
 </script>
