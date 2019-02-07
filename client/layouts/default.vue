@@ -37,6 +37,11 @@
         </ul>
       </div>
     </nav>
+    <br/>
+    <div v-show="this.$store.state.error" class="alert alert-danger" role="alert">
+      {{this.$store.state.error}}
+      <button v-on:click="closeError" type="button" class="btn btn-light">x</button>
+    </div>
     <nuxt/>
   </div>
 </template>
@@ -51,6 +56,18 @@ export default {
         return true
       else
         return false
+    },
+    error: function(){
+      if(this.$store.state.error && this.$store.state.error.length>0)
+        return this.$store.state.error
+      else
+        return null
+    }
+  },
+  methods:{
+    closeError(){
+      console.log("clicked")
+      this.$store.dispatch("deleteError")
     }
   }
 }

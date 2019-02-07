@@ -29,12 +29,11 @@ export default {
       return process.env.API_BASE_URL+"/images/"+name
     }
   },
-  async asyncData({app}){
+  async asyncData({app, error}){
     const options = { query: queries.timeline}
     const res = await query(app.$apolloClient, options)
-    return{
-      timeline: await res.data.currentUser.timeline
-    }
+    .catch((err)=>{ error( { statusCode:400, message: err.message } ) } )
+    if(res) return{ timeline: await res.data.currentUser.timeline }
   }
 }
 </script>

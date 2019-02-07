@@ -29,15 +29,19 @@ export default {
       const awaitRefetchQueries = true
       const options = { mutation: mutations.follow, variables, refetchQueries, awaitRefetchQueries}
       const res = await mutate(this.$apolloClient, options)
-      console.log(res)
+      .catch((err)=>{ this.$store.dispatch("setError", err.message) } )
+      if(res) console.log(res)
     }
   },
-  async asyncData({app}){
+  async asyncData({app, error}){
     const options = { query: queries.simpleUserList }
     const res = await query(app.$apolloClient, options)
-    const users = [res.data.user1, res.data.user2, res.data.user3]
-    return{
-      users
+    .catch((err)=>{ error( { statusCode:400, message: err.message } ) } )
+    if(res){
+      const users = [res.data.user1, res.data.user2, res.data.user3]
+      return{
+        users
+      }
     }
   }
 }

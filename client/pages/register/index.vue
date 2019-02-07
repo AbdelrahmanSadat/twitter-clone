@@ -44,9 +44,9 @@ export default {
       const variables = { email:this.email, password:this.password }
       const options = { mutation: mutations.register, variables }
       const res = await mutate(this.$apolloClient, options)
-
+      .catch((err)=>{ this.$store.dispatch("setError", err.message) } )
+      if(res) this.$router.push("verification");
       // TODO: redirect or display on succcess or failure
-      this.$router.push("verification");
     }
   }
 }

@@ -25,13 +25,12 @@ export default {
       return process.env.API_BASE_URL+"/images/"+name
     }
   },
-  async asyncData({app, params}){
+  async asyncData({app, params, error}){
     const variables = { id: params.id }
     const options = { query: queries.userProfile, variables }
     const res = await query(app.$apolloClient, options)
-    return{
-      user: res.data.user
-    }
+    .catch((err)=>{ error( { statusCode:400, message: err.message } ) } )
+    if(res) return{ user: res.data.user }
   }
 }
 </script>

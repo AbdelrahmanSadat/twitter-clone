@@ -47,10 +47,12 @@ export default {
       }
       const options = { mutation: mutations.verification, variables }
       const res = await mutate(this.$apolloClient, options)
-      
-      console.log("Submitted")
-      await this.$store.dispatch("setToken", res.data.verify);
-      this.$router.push("/", ()=>this.$router.go(0));
+      .catch((err)=>{ this.$store.dispatch("setError", err.message) } )
+      if(res){
+        console.log("Submitted")
+        await this.$store.dispatch("setToken", res.data.verify);
+        this.$router.push("/", ()=>this.$router.go(0));
+      }
     }
   }
 }

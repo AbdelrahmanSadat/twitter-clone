@@ -28,20 +28,22 @@ export default {
   data(){
     return{
       email:"",
-      password:""
+      password:"",
+      error:""
     }
   },
   methods:{
     async onSubmit(){      
-      // TODO: redirect or display on success and error
       const variables = { email:this.email, password:this.password }
       const options = { mutation: mutations.login, variables }
       const res = await mutate(this.$apolloClient, options)
-      
+      .catch((err)=>{this.$store.dispatch("setError", err.message)})
       // TODO: redirect or display on success and error
       console.log("Submitted")
-      await this.$store.dispatch("setToken", res.data.login);
-      this.$router.push("/", ()=>this.$router.go(0));
+      if(res){
+        await this.$store.dispatch("setToken", res.data.login);
+        this.$router.push("/", ()=>this.$router.go(0));
+      }
     }
   }
 }

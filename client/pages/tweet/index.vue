@@ -9,10 +9,6 @@
             <input v-model="text" type="text" name="text">
           </label>
           <br/>
-          <!-- <label>
-            Image
-            <input type="file" id="file" ref="file" name="file" v-on:change="onFileChange">
-          </label> -->
           <br/>
           <Dropzone 
             v-on:vdropzone-file-added="onFileAdd" 
@@ -24,6 +20,7 @@
             v-on:vdropzone-success="onUploadSuccess"
           >
           </Dropzone>
+          <br/>
           <button>Tweet</button>
         </form> 
       </div>
@@ -49,7 +46,7 @@ export default {
       dropzoneOptions: {
         url: process.env.API_BASE_URL+"/upload",
         maxFileSize: 1024*1024, //10MB?
-        paramName: "image", //already the default
+        paramName: "image",
         maxFiles: 1,
         acceptedFiles: ".png,.jpg,.jpeg,.gif",
         autoProcessQueue: false, // !!!!!!!!!!!!!!!!!!!!!
@@ -74,7 +71,6 @@ export default {
       // console.log(dropzone.getAcceptedFiles())
       
       // if a file has been added:
-      // getQueuedFiles
       if(dropzone.getQueuedFiles().length > 0)
         await dropzone.processQueue();
       else{
@@ -97,8 +93,8 @@ export default {
       const awaitRefetchQueries = true
       const options = {mutation: mutations.tweet, variables, refetchQueries, awaitRefetchQueries}
       const res = await mutate(this.$apolloClient, options)
-      console.log("Submitted")
-      this.$router.push("timeline");
+      .catch((err)=>{ this.$store.dispatch("setError", err.message) } )
+      if(res) this.$router.push("timeline");
     }
   }
 }
