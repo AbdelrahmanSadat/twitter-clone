@@ -20,29 +20,42 @@
 </template>
 
 <script>
-import mutations from '@/gql/mutations'
-import mutate from "@/helpers/mutate"
+import firebase from "firebase"
+import {queries, mutations} from '@/gql'
+import {query, mutate} from "@/helpers"
 
 // TODO: add some error handling
 export default {
   data(){
     return{
       email:"",
-      password:"",
-      error:""
+      password:""
     }
   },
   methods:{
-    async onSubmit(){      
-      const variables = { email:this.email, password:this.password }
-      const options = { mutation: mutations.login, variables }
-      const res = await mutate(this.$apolloClient, options)
+    async onSubmit(){     
+      // const refetchQueries = [{query: queries.timeline}, {query: queries.currentUserProfile}]
+      // const awaitRefetchQueries = true 
+      let variables = { email:this.email, password:this.password }
+      let options = { mutation: mutations.login, fetchPolicy: "no-cache", variables }
+      const login = await mutate(this.$apolloClient, options)
       .catch((err)=>{this.$store.dispatch("setError", err.message)})
-      // TODO: redirect or display on success and error
       console.log("Submitted")
-      if(res){
-        await this.$store.dispatch("setToken", res.data.login);
-        this.$router.push("/", ()=>this.$router.go(0));
+
+      if(login){
+        await this.$store.dispatch("setToken", login.data.login);
+
+        options = { query: queries.currentUser }
+        const user = await query(this.$apolloClient, options)
+
+        const messaging = firebase.messaging();
+        const token = await messaging.getToken();
+
+        variables = { userId: user.data.currentUser.id, token }
+        options = { mutation: mutations.registerationToken, variables }
+        mutate(this.$apolloClient, options )
+        
+        this.$router.push("/timeline");
       }
     }
   }

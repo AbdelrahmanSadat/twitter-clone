@@ -18,19 +18,32 @@ const registerationToken = {
     userId: { type: new GraphQLNonNull(GraphQLID) }
   },
   async resolve(parent, args){
+    // Check if there's a user with this id
     const user = await User.findById(args.userId);
     if(!user)
       throw new Error("Incorrect user id");
 
-    // If the user had a token, and it's different, overwrite the old token
-    const existingToken = await RegisterationToken.findOne({userId: args.userId});
+    // Check if the token already exists. If so, and the user is different, delete the doc
+    let existingToken = await RegisterationToken.findOne({token: args.token});
+    if(existingToken){
+      if(existingToken.userId == user.userId)
+        throw new Error("Token already registered")
+      else
+        await existingToken.remove()
+    }
+    
+    // Check if the user already had a token. if so, and the token is different, overwrite the old token
+    existingToken = await RegisterationToken.findOne({userId: args.userId});
     if(existingToken){
       if(existingToken.token == args.token)
         throw new Error("Token already registered");
-      existingToken.token = args.token;
-      await existingToken.save();
-      return true
+      else{
+        existingToken.token = args.token;
+        await existingToken.save();
+        return true
+      }
     }
+    
     // If the user didn't have a registeration token before,
     // create a new document for it
     const token = await RegisterationToken.create({

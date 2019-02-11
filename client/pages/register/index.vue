@@ -42,7 +42,7 @@ export default {
   methods:{
     async onSubmit(){
       const variables = { email:this.email, password:this.password }
-      const options = { mutation: mutations.register, variables }
+      const options = { mutation: mutations.register,fetchPolicy: "no-cache", variables }
       const res = await mutate(this.$apolloClient, options)
       .catch((err)=>{ this.$store.dispatch("setError", err.message) } )
       if(res) this.$router.push("verification");

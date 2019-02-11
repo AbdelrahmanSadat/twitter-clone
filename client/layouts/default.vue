@@ -66,7 +66,6 @@ export default {
   },
   methods:{
     closeError(){
-      console.log("clicked")
       this.$store.dispatch("deleteError")
     }
   }
