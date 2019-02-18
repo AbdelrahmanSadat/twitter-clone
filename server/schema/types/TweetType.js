@@ -27,12 +27,13 @@ const TweetType = new GraphQLObjectType({
    createdAt: {type: GraphQLDateTime},
    updatedAt: {type: GraphQLDateTime},
    author: {
-     // The user type is required here to overcome the
-     // circular dependency
-     type: require("./UserType"),
-     resolve(parent, args){
-       return User.findById(parent.authorId);
-     }
+    // The user type is required here to overcome the
+    // circular dependency
+    //  TODO: Use a thunk (a function that returns the value, as it will be executed later)
+    type: require("./UserType"),
+    resolve(parent, args){
+      return User.findById(parent.authorId);
+    }
    }
  })
 });

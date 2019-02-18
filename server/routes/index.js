@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const graphqlHTTP = require('express-graphql');
-const schema = require('../schema');
+// const schema = require('../schema');
+const schema = require("../src/graphql");
 const jwt = require('express-jwt');
 const helpers = require("../helpers");
 

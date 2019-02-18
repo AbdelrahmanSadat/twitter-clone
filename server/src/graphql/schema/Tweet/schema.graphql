@@ -1,0 +1,25 @@
+type Tweet{
+    id: ID,
+    #authorId: ID,
+    text: String,
+    image: String,
+    createdAt: DateTime,
+    updatedAt: DateTime,
+    author: User
+}
+
+# For use in the "favorite" mutation
+type favoriteMutationResponse{
+    tweet: Tweet,
+    notified: Boolean,
+    message: String
+}
+
+type Query{
+    tweet(id: ID!): Tweet
+}
+
+type Mutation{
+    tweet(text: String, image: String): Tweet,
+    favorite(tweetId: ID!): favoriteMutationResponse
+}

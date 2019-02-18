@@ -1,0 +1,31 @@
+type User{
+    id: ID,
+    email: String,
+    isVerified: Boolean,
+    following: [User],
+    followers: [User],
+    tweets: [Tweet],
+    timeline: [Tweet],
+    favorites: [Tweet]
+}
+
+type followResponse{
+    followedUser: User,
+    notified: Boolean,
+    message: String
+}
+
+type Query{
+    user(id: ID, email: String): User,
+    currentUser: User
+}
+
+type Mutation{
+    follow(toFollowId: ID!): followResponse,
+    login(email: String!, password: String!): String,
+    register(email: String!, password: String!): User,
+    registerationToken(token: String!, userId: ID!): Boolean,
+    sendVerificationEmail(id: ID!): String,
+    verify(email: String!, password: String!, verificationCode: Int!): String
+}
+
