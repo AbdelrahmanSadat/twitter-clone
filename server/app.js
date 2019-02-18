@@ -4,6 +4,8 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const { ApolloServer } = require('apollo-server-express');
+const glue = require('schemaglue');
 
 require('dotenv').config();
 
@@ -35,5 +37,18 @@ app.use(cors( {origin:[process.env.CLIENT_URL], methods: "GET,POST,PUT,DELETE", 
 
 app.use('/', indexRouter);
 // app.use('/users', usersRouter);
+
+// Graphql / ApolloServer setup
+const options = { ignore: '**/index.js' };
+const { schema, resolver } = glue('src/graphql', options);
+// TODO: pass only the needed data to the context, instead of the whole req object
+const server = new ApolloServer({
+    typeDefs: schema,
+    resolvers: resolver,
+    context( {req} ){
+      return req
+    }
+});
+server.applyMiddleware({ app });
 
 module.exports = app;

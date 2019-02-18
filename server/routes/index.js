@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const graphqlHTTP = require('express-graphql');
+// schema defined programatically
 // const schema = require('../schema');
-const schema = require("../src/graphql");
+// schema definition using sdl
+// const schema = require("../src/graphql");
 const jwt = require('express-jwt');
 const helpers = require("../helpers");
 
@@ -16,15 +18,17 @@ router.get('/', (req, res)=>{
   res.send("Express Server Running");
 });
 
-router.get('/graphql', graphqlHTTP({
-  schema: schema,
-  graphiql: true
-}));
+// // a graphql route using express-graphql.
+// // using apollo server instead.
+// router.get('/graphql', graphqlHTTP({
+//   schema: schema,
+//   graphiql: true
+// }));
 
-router.post('/graphql', graphqlHTTP({
-  schema: schema,
-  graphiql: false
-}));
+// router.post('/graphql', graphqlHTTP({
+//   schema: schema,
+//   graphiql: false
+// }));
 
 // TODO: remove this route
 router.get('/upload', (req, res)=>{
