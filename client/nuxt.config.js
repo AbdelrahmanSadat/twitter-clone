@@ -72,6 +72,11 @@ module.exports = {
   ],
 
   // Server-side middleware
-  serverMiddleware: [ "@/serverMiddleware/cookieParser" ]
+  serverMiddleware: [ "@/serverMiddleware/cookieParser" ],
+
+  // Router middleware
+  router: {
+    middleware: 'removeErrorMessage'
+  }
 }
 
