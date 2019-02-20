@@ -12,3 +12,6 @@ dist
 
 # dotenv file
 .env
+
+# yarn error log
+yarn-error.log
