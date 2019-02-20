@@ -26,7 +26,7 @@ const registerationToken = {
     // Check if the token already exists. If so, and the user is different, delete the doc
     let existingToken = await RegisterationToken.findOne({token: args.token});
     if(existingToken){
-      if(existingToken.userId == user.userId)
+      if(existingToken.userId == user.id)
         throw new Error("Token already registered")
       else
         await existingToken.remove()
