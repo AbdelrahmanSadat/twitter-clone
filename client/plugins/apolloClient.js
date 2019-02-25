@@ -1,19 +1,36 @@
-import vue from 'vue';
-import { ApolloLink } from 'apollo-link';
+import { ApolloLink, split } from 'apollo-link';
 import { ApolloClient } from 'apollo-client';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { setContext } from 'apollo-link-context';
 import { HttpLink } from 'apollo-link-http';
-// TODO: use a fetch compatible with older browsers?
+import { WebSocketLink } from 'apollo-link-ws';
+import { getMainDefinition } from 'apollo-utilities';
+// TODO: use a fetch compatible with older browsers? (isomorphic-fetch)?
 import fetch from 'node-fetch';
-import * as Cookies from 'js-cookie' 
+import * as Cookies from 'js-cookie';
 
 
 
 
-// TODO: inject apolloClient into the vue instance...
 export default ({req}, inject)=>{
   const httpLink = new HttpLink({ uri: process.env.API_BASE_URL+"/graphql", fetch: fetch});
+  // WS link should only run in the browser
+  const wsLink = process.browser? new WebSocketLink({
+    uri: process.env.WEBSOCKET_URL,
+    options: {
+      reconnect: true
+    }
+  }) : null ;
+  // Will only split in the browser
+  const link = process.browser? split(
+    // split based on operation type
+    ({ query }) => {
+      const { kind, operation } = getMainDefinition(query);
+      return kind === 'OperationDefinition' && operation === 'subscription';
+    },
+    wsLink,
+    httpLink,
+  ) : httpLink ;
   const authLink = setContext((_, { headers }) => {
     // get the authentication token from cookie if it exists
     var token;
@@ -40,7 +57,7 @@ export default ({req}, inject)=>{
   
 
   const apolloClient = new ApolloClient({
-    link: authLink.concat(httpLink),
+    link: authLink.concat(link),
     cache: new InMemoryCache(),
     ssrMode: process.server
   });

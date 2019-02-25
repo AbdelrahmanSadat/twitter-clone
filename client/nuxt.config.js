@@ -68,7 +68,8 @@ module.exports = {
   plugins: [
     { src: '~/plugins/persistedState.js', ssr: false },
     { src: '~/plugins/apolloClient.js', ssr: true},
-    { src: '~/plugins/fcm.js', ssr: false}
+    { src: '~/plugins/fcm.js', ssr: false},
+    { src: '~/plugins/testSubscription.js', ssr: false}
   ],
 
   // Server-side middleware

@@ -15,3 +15,6 @@ dist
 
 # yarn error log
 yarn-error.log
+
+# built SW
+static/sw.js
