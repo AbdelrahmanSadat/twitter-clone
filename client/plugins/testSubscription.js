@@ -1,7 +1,6 @@
 import subscriptions from "@/gql/subscriptions"
 
 export default function({app}){
-    console.log("shit ran y'all")
     // Testing subscriptions
     const testSubscriptionObservable = app.$apolloClient.subscribe({
         query: subscriptions.testSubscription
