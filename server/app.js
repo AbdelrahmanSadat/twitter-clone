@@ -42,13 +42,13 @@ app.use('/', indexRouter);
 const options = { ignore: '**/index.js' };
 const { schema, resolver } = glue('src/graphql', options);
 // TODO: pass only the needed data to the context, instead of the whole req object
-const server = new ApolloServer({
+const apolloServer = new ApolloServer({
     typeDefs: schema,
     resolvers: resolver,
     context( {req} ){
       return req
     }
 });
-server.applyMiddleware({ app });
+apolloServer.applyMiddleware({ app });
 
-module.exports = app;
+module.exports = {app, apolloServer};

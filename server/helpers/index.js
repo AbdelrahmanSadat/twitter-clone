@@ -5,9 +5,11 @@ const path = require("path");
 const upload = require("./upload");
 const transporter = require("./transporter");
 const randomCode = require("./randomCode");
+const pubsub = require("./pubsub");
 
 module.exports = {
   randomCode,
   transporter,
-  upload
+  upload,
+  pubsub
 }

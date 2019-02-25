@@ -1,5 +1,6 @@
 const User = require('../../../../models/user')
 const Tweet = require('../../../../models/tweet')
+const pubsub = require('../../../../helpers/pubsub')
 
 exports.resolver = {
     User:{
@@ -22,6 +23,7 @@ exports.resolver = {
             .find({ authorId: { $in: userIDList}})
             .sort({updatedAt: "desc"})
             .exec();
+            pubsub.publish('testSubscription', { content: "Subscription message"})
             return timeline;
         },
         async favorites(parent){

@@ -29,3 +29,6 @@ type Mutation{
     verify(email: String!, password: String!, verificationCode: Int!): String
 }
 
+type Subscription{
+    testSubscription(userId: ID): String
+}
