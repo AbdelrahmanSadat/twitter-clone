@@ -1,12 +1,15 @@
 import queries from "./queries"
 import mutations from "./mutations"
+import subscriptions from "./subscriptions"
 
 export{
     queries,
-    mutations
+    mutations,
+    subscriptions
 }
 
 export default{
     queries,
-    mutations
+    mutations,
+    subscriptions
 }

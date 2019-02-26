@@ -15,14 +15,24 @@ import * as Cookies from 'js-cookie';
 export default ({req}, inject)=>{
   const httpLink = new HttpLink({ uri: process.env.API_BASE_URL+"/graphql", fetch: fetch});
   // WS link should only run in the browser
-  const wsLink = process.browser? new WebSocketLink({
+  const wsLink = process.client? new WebSocketLink({
     uri: process.env.WEBSOCKET_URL,
     options: {
-      reconnect: true
+      reconnect: true,
+      reconnectionAttempts: 10,
+      // connectionParams is a function to delay execution(thunk),
+      // useful in case the user logs in after the app initialises
+      connectionParams: () => ({
+        authToken: JSON.parse(Cookies.get("vuex")).token
+      })
+      
+      // {
+      //   authToken: JSON.parse(Cookies.get("vuex")).token
+      // },
     }
   }) : null ;
   // Will only split in the browser
-  const link = process.browser? split(
+  const link = process.client? split(
     // split based on operation type
     ({ query }) => {
       const { kind, operation } = getMainDefinition(query);

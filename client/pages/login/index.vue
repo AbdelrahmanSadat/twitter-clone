@@ -21,8 +21,8 @@
 
 <script>
 import firebase from "firebase"
-import {queries, mutations} from '@/gql'
-import {query, mutate} from "@/helpers"
+import {queries, mutations, subscriptions} from '@/gql'
+import {query, mutate, subscribe} from "@/helpers"
 
 // TODO: add some error handling
 export default {
@@ -53,8 +53,22 @@ export default {
 
         variables = { userId: user.data.currentUser.id, token }
         options = { mutation: mutations.registerationToken, variables }
-        mutate(this.$apolloClient, options )
+        await mutate(this.$apolloClient, options )
+        .catch(err=>console.log(err.message))
         
+        const testSubscriptionObservable = await subscribe(
+          this.$apolloClient, 
+          { query: subscriptions.testSubscription }
+        )
+        
+        const testSubscription = testSubscriptionObservable.subscribe(
+          x => console.log(x),
+          err => console.log(err),
+          () => console.log('Finished')
+        );
+
+        // testSubscription.unsubscribe()
+
         this.$router.push("/timeline");
       }
     }

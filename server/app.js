@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const { ApolloServer } = require('apollo-server-express');
 const glue = require('schemaglue');
+const jwt = require('jsonwebtoken');
 
 require('dotenv').config();
 
@@ -45,10 +46,30 @@ const { schema, resolver } = glue('src/graphql', options);
 const apolloServer = new ApolloServer({
     typeDefs: schema,
     resolvers: resolver,
-    context( {req} ){
+    context: async( {req} )=>{
       return req
+    },
+    subscriptions: {
+      onConnect(connectionParams, webSocket){
+        // if (connectionParams.authToken) {
+        //   return validateToken(connectionParams.authToken)
+        //     .then(findUser(connectionParams.authToken))
+        //     .then(user => {
+        //       return {
+        //         currentUser: user,
+        //       };
+        //     });
+        // }
+        return validateToken(connectionParams.authToken)
+      }
     }
 });
 apolloServer.applyMiddleware({ app });
 
 module.exports = {app, apolloServer};
+
+
+// TODO: move
+const validateToken = async (token)=>{
+  return await jwt.verify(token, process.env.JWT_SECRET);
+}

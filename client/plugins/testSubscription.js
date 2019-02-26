@@ -1,13 +1,13 @@
 import subscriptions from "@/gql/subscriptions"
 
-export default function({app}){
+export default ({app}, inject)=>{
     // Testing subscriptions
     const testSubscriptionObservable = app.$apolloClient.subscribe({
         query: subscriptions.testSubscription
     })
-    testSubscriptionObservable.subscribe(
+    const testSubscription = testSubscriptionObservable.subscribe(
         x => console.log(x),
-        err => console.log(`Finished with error: ${ err }`),
+        err => console.log(err),
         () => console.log('Finished')
     );
 }

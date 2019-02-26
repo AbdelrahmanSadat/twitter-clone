@@ -1,12 +1,15 @@
 import mutate from "./mutate"
 import query from "./query"
+import subscribe from "./subscribe"
 
 export {
     mutate,
-    query
+    query,
+    subscribe
 }
 
 export default{
     mutate,
-    query
+    query,
+    subscribe
 }
