@@ -77,7 +77,9 @@ module.exports = {
 
   // Router middleware
   router: {
-    middleware: 'removeErrorMessage'
+    middleware: 'removeErrorMessage',
+    linkPrefetchedClass: 'nuxt-link-prefetched',
+    prefetch: true // default
   }
 }
 
