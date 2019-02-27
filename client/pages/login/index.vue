@@ -61,13 +61,14 @@ export default {
           { query: subscriptions.testSubscription }
         )
         
-        const testSubscription = testSubscriptionObservable.subscribe(
+        const testSubscription = await testSubscriptionObservable.subscribe(
           x => console.log(x),
           err => console.log(err),
           () => console.log('Finished')
         );
 
-        // testSubscription.unsubscribe()
+        await this.$store.dispatch("setTestUnsubscription", testSubscription.unsubscribe.bind(testSubscription))
+
 
         this.$router.push("/timeline");
       }

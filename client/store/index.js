@@ -1,6 +1,7 @@
 export const state = () => ({
   token: null,
-  error: null
+  error: null,
+  testUnsubscription: null
 })
 
 export const mutations = {
@@ -15,6 +16,9 @@ export const mutations = {
   },
   deleteError(state){
     state.error = null
+  },
+  setTestUnsubscription(state, unsubscriber){
+    state.testUnsubscription = unsubscriber
   }
 }
 
@@ -30,5 +34,8 @@ export const actions = {
   },
   deleteError({commit}, error){
     commit("deleteError")
+  },
+  setTestUnsubscription({commit}, unsubscriber){
+    commit("setTestUnsubscription", unsubscriber)
   }
 }

@@ -1,15 +1,19 @@
 import subscriptions from "@/gql/subscriptions"
 
-export default ({app}, inject)=>{
+export default async ({app, store}, inject)=>{
     // Testing subscriptions
-    const testSubscriptionObservable = app.$apolloClient.subscribe({
+    const testSubscriptionObservable = await app.$apolloClient.subscribe({
         query: subscriptions.testSubscription
     })
-    const testSubscription = testSubscriptionObservable.subscribe(
+    const testSubscription = await testSubscriptionObservable.subscribe(
         x => console.log(x),
         err => console.log(err),
         () => console.log('Finished')
     );
+    await store.dispatch(
+        "setTestUnsubscription",
+         testSubscription.unsubscribe.bind(testSubscription)
+    )
 }
 
 
