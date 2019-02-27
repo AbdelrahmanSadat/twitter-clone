@@ -23,7 +23,12 @@ exports.resolver = {
             .find({ authorId: { $in: userIDList}})
             .sort({updatedAt: "desc"})
             .exec();
-            pubsub.publish('testSubscription', { content: "Subscription message"})
+            // The return object should have the same name as
+            // the subscription???
+            // see: https://github.com/apollographql/subscriptions-transport-ws/issues/236 
+            // and should return the type specified in the schema.
+            // in this case, a string
+            pubsub.publish('testSubscription', { testSubscription: "shit ran y'all" })
             return timeline;
         },
         async favorites(parent){
